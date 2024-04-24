@@ -5,8 +5,8 @@ import { fetchMetadata } from "frames.js/next";
 
 export async function generateMetadata(): Promise<Metadata> {
   return {
-    title: "New api example",
-    description: "This is a new api example",
+    title: "XMTP Base Frame",
+    description: "This is a new transaction frame",
     other: {
       ...(await fetchMetadata(
         new URL("/frames", vercelURL() || "http://localhost:3000")

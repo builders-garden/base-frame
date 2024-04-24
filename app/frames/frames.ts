@@ -6,7 +6,7 @@ import { getXmtpFrameMessage, isXmtpFrameActionPayload } from "frames.js/xmtp";
 
 export const frames = createFrames({
   basePath: "/frames",
-  baseUrl: process.env.NEXT_PUBLIC_HOST,
+  baseUrl: process.env.NEXT_PUBLIC_HOST || "http://localhost:3000",
   initialState: {
     pageIndex: 0,
   },
