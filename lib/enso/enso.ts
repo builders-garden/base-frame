@@ -4,8 +4,14 @@ import { TOKENS } from "../tokens";
 import { ApiResponse } from "./interface";
 import { checkTokenDecimals } from "../utils";
 import { NATIVE_TOKEN, ENSO_NATIVE_TOKEN } from "../utils";
+
 // Swap function 
-export async function swap() {
+export async function swap(
+  tokenIn: string,
+  tokenOut: string,
+  amount: string,
+  fromAddress: string
+) {
 
   const chainId = process.env.CHAIN_ID || 8453;
   let tokenInAddress = TOKENS[chainId as number][tokenIn];
@@ -21,7 +27,21 @@ export async function swap() {
     tokenInAddress = ENSO_NATIVE_TOKEN;
   }
 
-  const apiUrl = `https://api.enso.finance/api/v1/shortcuts/route?chainId=${chainId}&fromAddress=${address}&routingStrategy=router&receiver=${receiver}&spender=${address}&amountIn=${amountIn}&slippage=300&fee=${fee}&feeReceiver=${feeReceiver}&disableRFQs=false&tokenIn=${tokenInAddress}&tokenOut=${tokenOutAddress}`;
+  const baseUrl = new URL("https://api.enso.finance/api/v1/shortcuts/route");
+  baseUrl.searchParams.append("chainId", chainId.toString())
+  baseUrl.searchParams.append("fromAddress", fromAddress)
+  baseUrl.searchParams.append("routingStrategy", "router")
+  baseUrl.searchParams.append("receiver", fromAddress)
+  baseUrl.searchParams.append("spender", fromAddress)
+  baseUrl.searchParams.append("amountIn", amountIn)
+  baseUrl.searchParams.append("slippage", "300")
+  baseUrl.searchParams.append("fee", fee.toString())
+  baseUrl.searchParams.append("feeReceiver", feeReceiver)
+  baseUrl.searchParams.append("disableRFQs", "false")
+  baseUrl.searchParams.append("tokenIn", tokenInAddress)
+  baseUrl.searchParams.append("tokenOut", tokenOutAddress)
+
+  const apiUrl = baseUrl.toString();
   console.log(apiUrl);
 
   try {
@@ -37,11 +57,10 @@ export async function swap() {
     return {
       fromChainId: chainId,
       fromAmount: amount,
-      fromToken: tokenInAddress,,
+      fromToken: tokenInAddress,
       from: fromAddress,
       toChainId: chainId,
-      toAmount: amountOut,
-      toAmountMin: amountOut,
+      toAmount: data.amountOut,
       toToken: tokenOutAddress,
       to: data.tx.to,
       value: data.tx.value,
