@@ -1,4 +1,6 @@
 import { headers } from "next/headers";
+import { createPublicClient, http } from "viem";
+import { ERC20_ABI } from "./abis";
 
 const DEFAULT_DEBUGGER_URL =
   process.env.DEBUGGER_URL ?? "http://localhost:3010/";
@@ -37,3 +39,37 @@ export function createDebugUrl(frameURL: string | URL): string {
     return "#";
   }
 }
+
+export async function checkTokenDecimals(
+  tokenAddress: string,
+  chain: string
+): Promise<number> {
+  if (tokenAddress === NATIVE_TOKEN) {
+    return 18;
+  }
+
+  const publicClient = createPublicClient({
+    chain: chainParser(chain),
+    transport: http(),
+  });
+
+  const decimals = (await publicClient.readContract({
+    address: tokenAddress as `0x${string}`,
+    abi: ERC20_ABI,
+    functionName: "decimals",
+  })) as number;
+
+  if (isNaN(decimals)) {
+    throw new Error(
+      `Token decimals not available for address ${tokenAddress}`
+    );
+  }
+
+  return decimals;
+}
+function chainParser(chain: string): any {
+  throw new Error("Function not implemented.");
+}
+
+export const NATIVE_TOKEN = "0x0000000000000000000000000000000000000000"
+export const ENSO_NATIVE_TOKEN = "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
