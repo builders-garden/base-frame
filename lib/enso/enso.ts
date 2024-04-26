@@ -7,12 +7,13 @@ import { NATIVE_TOKEN, ENSO_NATIVE_TOKEN } from "../utils";
 // Swap function 
 export async function swap() {
 
-  let tokenInAddress = TOKENS[chain.id][tokenIn];
-  const tokenOutAddress = TOKENS[chain.id][tokenOut];
+  const chainId = process.env.CHAIN_ID || 8453;
+  let tokenInAddress = TOKENS[chainId as number][tokenIn];
+  const tokenOutAddress = TOKENS[chainId as number][tokenOut];
   const fee = process.env.FEE || 0;
   const feeReceiver = process.env.FEE_RECEIVER || "0x0000000000000000000000000000000000000000";
-  const tokenInDecimals = await checkTokenDecimals(tokenInAddress, chain.id);
-  const tokenOutDecimals = await checkTokenDecimals(tokenOutAddress, chain.id);
+  const tokenInDecimals = await checkTokenDecimals(tokenInAddress, chainId.toString());
+  const tokenOutDecimals = await checkTokenDecimals(tokenOutAddress, chainId.toString());
   const amountIn = parseUnits(amount, tokenInDecimals).toString();
 
   //Adjust tokenIn if it is the native token
@@ -20,7 +21,7 @@ export async function swap() {
     tokenInAddress = ENSO_NATIVE_TOKEN;
   }
 
-  const apiUrl = `https://api.enso.finance/api/v1/shortcuts/route?chainId=${chain.id}&fromAddress=${address}&routingStrategy=router&receiver=${receiver}&spender=${address}&amountIn=${amountIn}&slippage=300&fee=${fee}&feeReceiver=${feeReceiver}&disableRFQs=false&tokenIn=${tokenInAddress}&tokenOut=${tokenOutAddress}`;
+  const apiUrl = `https://api.enso.finance/api/v1/shortcuts/route?chainId=${chainId}&fromAddress=${address}&routingStrategy=router&receiver=${receiver}&spender=${address}&amountIn=${amountIn}&slippage=300&fee=${fee}&feeReceiver=${feeReceiver}&disableRFQs=false&tokenIn=${tokenInAddress}&tokenOut=${tokenOutAddress}`;
   console.log(apiUrl);
 
   try {
@@ -34,11 +35,11 @@ export async function swap() {
     console.log(data, "data");
 
     return {
-      fromChainId: chain.id,
+      fromChainId: chainId,
       fromAmount: amount,
       fromToken: tokenInAddress,,
       from: fromAddress,
-      toChainId: chain.id,
+      toChainId: chainId,
       toAmount: amountOut,
       toAmountMin: amountOut,
       toToken: tokenOutAddress,
