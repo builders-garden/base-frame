@@ -10,7 +10,6 @@ import { NextResponse } from "next/server";
 export async function transfer(
     tokenIn: string,
     amount: string,
-    fromAddress: string,
     receiverAddress: string
 ) {
 
@@ -40,7 +39,6 @@ export async function mint721(
     tokenIn: string,
     tokenId: string,
     receiverAddress: string,
-    fromAddress: string,
     value: string
 ) {
     const chainId = process.env.CHAIN_ID || 8453;
