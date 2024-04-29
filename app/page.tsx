@@ -20,7 +20,7 @@ export default async function Home() {
 
   return (
     <div className="flex flex-col gap-2">
-      Stringz landing page
+      <h1 className="text-4xl">XMTP Base Frame</h1>
       <Link href={createDebugUrl(url)} className="underline">
         Debug
       </Link>

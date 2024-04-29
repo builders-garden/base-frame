@@ -1,5 +1,6 @@
 import { headers } from "next/headers";
 import { createPublicClient, http } from "viem";
+import { base, baseSepolia } from "viem/chains";
 import { ERC20_ABI } from "./abis";
 
 const DEFAULT_DEBUGGER_URL =
@@ -24,7 +25,7 @@ export function currentURL(pathname: string): URL {
 
 export function vercelURL(): string {
   return process.env.VERCEL_URL
-    ? `https://stringz.builders.garden`
+    ? `https://xmtp-base-frame.builders.garden`
     : "http://localhost:3000";
 }
 
@@ -42,14 +43,14 @@ export function createDebugUrl(frameURL: string | URL): string {
 
 export async function checkTokenDecimals(
   tokenAddress: string,
-  chain: string
+  chainId: number
 ): Promise<number> {
   if (tokenAddress === NATIVE_TOKEN) {
     return 18;
   }
 
   const publicClient = createPublicClient({
-    chain: chainParser(chain),
+    chain: chainId === base.id ? base : baseSepolia,
     transport: http(),
   });
 
@@ -60,9 +61,7 @@ export async function checkTokenDecimals(
   })) as number;
 
   if (isNaN(decimals)) {
-    throw new Error(
-      `Token decimals not available for address ${tokenAddress}`
-    );
+    throw new Error(`Token decimals not available for address ${tokenAddress}`);
   }
 
   return decimals;
@@ -71,6 +70,33 @@ function chainParser(chain: string): any {
   throw new Error("Function not implemented.");
 }
 
-export const NATIVE_TOKEN = "0x0000000000000000000000000000000000000000"
-export const ENSO_NATIVE_TOKEN = "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
-export const ENSO_ROUTER_ADDRESS = "0x80EbA3855878739F4710233A8a19d89Bdd2ffB8E"
+export async function getTokenBalance(
+  address: string,
+  tokenAddress: string,
+  chainId: number
+) {
+  const publicClient = createPublicClient({
+    chain: chainId === base.id ? base : baseSepolia,
+    transport: http(),
+  });
+
+  if (tokenAddress === NATIVE_TOKEN) {
+    const balance = (await publicClient.getBalance({
+      address: address as `0x${string}`,
+    })) as bigint;
+
+    return balance;
+  }
+  const balance = (await publicClient.readContract({
+    address: tokenAddress as `0x${string}`,
+    abi: ERC20_ABI,
+    functionName: "balanceOf",
+    args: [address as `0x${string}`],
+  })) as bigint;
+
+  return balance;
+}
+
+export const NATIVE_TOKEN = "0x0000000000000000000000000000000000000000";
+export const ENSO_NATIVE_TOKEN = "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee";
+export const ENSO_ROUTER_ADDRESS = "0x80EbA3855878739F4710233A8a19d89Bdd2ffB8E";

@@ -1,4 +1,3 @@
-
 import { parseUnits } from "viem";
 import { TOKENS } from "../tokens";
 import { ApiResponse } from "./interface";
@@ -7,20 +6,20 @@ import { NATIVE_TOKEN, ENSO_NATIVE_TOKEN } from "../utils";
 import { NextResponse } from "next/server";
 import { ENSO_ROUTER_ABI } from "../abis";
 
-// Swap function 
+// Swap function
 export async function swap(
   tokenIn: string,
   tokenOut: string,
   amount: string,
   fromAddress: string
 ) {
-
-  const chainId = process.env.CHAIN_ID || 8453;
+  const chainId = parseInt(process.env.CHAIN_ID || "") || 8453;
   let tokenInAddress = TOKENS[chainId as number][tokenIn];
   const tokenOutAddress = TOKENS[chainId as number][tokenOut];
   const fee = process.env.FEE || 0;
-  const feeReceiver = process.env.FEE_RECEIVER || "0x0000000000000000000000000000000000000000";
-  const tokenInDecimals = await checkTokenDecimals(tokenInAddress, chainId.toString());
+  const feeReceiver =
+    process.env.FEE_RECEIVER || "0x0000000000000000000000000000000000000000";
+  const tokenInDecimals = await checkTokenDecimals(tokenInAddress, chainId);
   const amountIn = parseUnits(amount, tokenInDecimals).toString();
 
   //Adjust tokenIn if it is the native token
@@ -29,18 +28,18 @@ export async function swap(
   }
 
   const baseUrl = new URL("https://api.enso.finance/api/v1/shortcuts/route");
-  baseUrl.searchParams.append("chainId", chainId.toString())
-  baseUrl.searchParams.append("fromAddress", fromAddress)
-  baseUrl.searchParams.append("routingStrategy", "router")
-  baseUrl.searchParams.append("receiver", fromAddress)
-  baseUrl.searchParams.append("spender", fromAddress)
-  baseUrl.searchParams.append("amountIn", amountIn)
-  baseUrl.searchParams.append("slippage", "300")
-  baseUrl.searchParams.append("fee", fee.toString())
-  baseUrl.searchParams.append("feeReceiver", feeReceiver)
-  baseUrl.searchParams.append("disableRFQs", "false")
-  baseUrl.searchParams.append("tokenIn", tokenInAddress)
-  baseUrl.searchParams.append("tokenOut", tokenOutAddress)
+  baseUrl.searchParams.append("chainId", chainId.toString());
+  baseUrl.searchParams.append("fromAddress", fromAddress);
+  baseUrl.searchParams.append("routingStrategy", "router");
+  baseUrl.searchParams.append("receiver", fromAddress);
+  baseUrl.searchParams.append("spender", fromAddress);
+  baseUrl.searchParams.append("amountIn", amountIn);
+  baseUrl.searchParams.append("slippage", "300");
+  baseUrl.searchParams.append("fee", fee.toString());
+  baseUrl.searchParams.append("feeReceiver", feeReceiver);
+  baseUrl.searchParams.append("disableRFQs", "false");
+  baseUrl.searchParams.append("tokenIn", tokenInAddress);
+  baseUrl.searchParams.append("tokenOut", tokenOutAddress);
 
   const apiUrl = baseUrl.toString();
   console.log(apiUrl);
