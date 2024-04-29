@@ -167,11 +167,7 @@ export const POST = frames(async (ctx) => {
     // tokenFrom and tokenTo are valid
     if (!amount || !isValidAmount) {
       // user connected, check balance
-      const userBalance = await getTokenBalance(
-        userAddress,
-        TOKENS[CHAIN_ID][tokenFrom],
-        CHAIN_ID
-      );
+      const userBalance = await getTokenBalance(userAddress, tokenFrom);
       const formattedBalance = formatEther(
         userBalance as unknown as bigint,
         "wei"
@@ -343,11 +339,7 @@ export const POST = frames(async (ctx) => {
     // recipientAddress and token are valid
     if (!isValidAmount) {
       // user connected, check balance
-      const userBalance = await getTokenBalance(
-        userAddress,
-        TOKENS[CHAIN_ID][token],
-        CHAIN_ID
-      );
+      const userBalance = await getTokenBalance(userAddress, token);
       const formattedBalance = formatEther(
         userBalance as unknown as bigint,
         "wei"

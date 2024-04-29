@@ -1,7 +1,7 @@
 import { headers } from "next/headers";
-import { createPublicClient, http } from "viem";
-import { base, baseSepolia } from "viem/chains";
-import { ERC20_ABI } from "./abis";
+import { ERC20_ABI } from "@/lib/abis";
+import { CHAIN_ID, publicClient } from "@/lib/transactions";
+import { TOKENS } from "@/lib/tokens";
 
 const DEFAULT_DEBUGGER_URL =
   process.env.DEBUGGER_URL ?? "http://localhost:3010/";
@@ -49,11 +49,6 @@ export async function checkTokenDecimals(
     return 18;
   }
 
-  const publicClient = createPublicClient({
-    chain: chainId === base.id ? base : baseSepolia,
-    transport: http(),
-  });
-
   const decimals = (await publicClient.readContract({
     address: tokenAddress as `0x${string}`,
     abi: ERC20_ABI,
@@ -66,20 +61,9 @@ export async function checkTokenDecimals(
 
   return decimals;
 }
-function chainParser(chain: string): any {
-  throw new Error("Function not implemented.");
-}
 
-export async function getTokenBalance(
-  address: string,
-  tokenAddress: string,
-  chainId: number
-) {
-  const publicClient = createPublicClient({
-    chain: chainId === base.id ? base : baseSepolia,
-    transport: http(),
-  });
-
+export async function getTokenBalance(address: string, token: string) {
+  const tokenAddress = TOKENS[CHAIN_ID as number][token];
   if (tokenAddress === NATIVE_TOKEN) {
     const balance = (await publicClient.getBalance({
       address: address as `0x${string}`,

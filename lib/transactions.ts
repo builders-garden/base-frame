@@ -17,7 +17,7 @@ export const CHAIN_ID = process.env.CHAIN_ID
   ? parseInt(process.env.CHAIN_ID)
   : 8453;
 
-const publicClient = createPublicClient({
+export const publicClient = createPublicClient({
   chain: CHAIN_ID === base.id ? base : baseSepolia,
   transport: http(),
 });

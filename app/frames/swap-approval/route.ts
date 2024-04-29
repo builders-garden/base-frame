@@ -10,7 +10,7 @@ import {
 } from "viem";
 import { base, baseSepolia } from "viem/chains";
 import { storageRegistryABI } from "@/lib/contracts/storage-registry";
-import { CHAIN_ID } from "@/lib/transactions";
+import { CHAIN_ID, publicClient } from "@/lib/transactions";
 
 export async function POST(
   req: NextRequest
@@ -30,11 +30,6 @@ export async function POST(
     abi: storageRegistryABI,
     functionName: "rent",
     args: [BigInt(frameMessage.requesterFid), units],
-  });
-
-  const publicClient = createPublicClient({
-    chain: CHAIN_ID === base.id ? base : baseSepolia,
-    transport: http(),
   });
 
   const STORAGE_REGISTRY_ADDRESS = "0x00000000fcCe7f938e7aE6D3c335bD6a1a7c593D";
