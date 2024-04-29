@@ -1,10 +1,10 @@
 import { Button } from "frames.js/next";
+import { FrameDefinition, JsonValue } from "frames.js/types";
 import { frames } from "@/app/frames/frames";
 import { TOKENS, isApprovedToken } from "@/lib/tokens";
 import { getTokenBalance } from "@/lib/utils";
 import { isAddress, formatEther } from "viem";
-import { swap } from "@/lib/enso/enso";
-import { allowanceForSwap, approve } from "@/lib/transactions";
+import { CHAIN_ID, allowanceForSwap } from "@/lib/transactions";
 
 export const POST = frames(async (ctx) => {
   if (!ctx?.message?.isValid) {
@@ -18,8 +18,6 @@ export const POST = frames(async (ctx) => {
     //   ],
     // };
   }
-
-  const CHAIN_ID = parseInt(process.env.CHAIN_ID || "") || 8453;
 
   const userAddress =
     ctx.message?.requesterCustodyAddress || ctx.message?.verifiedWalletAddress;
@@ -101,8 +99,6 @@ export const POST = frames(async (ctx) => {
       !!amount && !isNaN(parseFloat(amount)) && parseFloat(amount) > 0.0;
     console.log("isValidAmount", isValidAmount, "amount", amount);
 
-    const isApprovedAllowance = ctx.url.searchParams.get("approved") === "true";
-
     if (!tokenFrom || !isValidTokenFrom) {
       const buttons = Object.keys(TOKENS[CHAIN_ID])
         .slice(0, 4)
@@ -114,7 +110,7 @@ export const POST = frames(async (ctx) => {
           >
             {token}
           </Button>
-        ));
+        )) as FrameDefinition<JsonValue>["buttons"];
 
       return {
         image: (
@@ -144,7 +140,7 @@ export const POST = frames(async (ctx) => {
           >
             {token}
           </Button>
-        ));
+        )) as FrameDefinition<JsonValue>["buttons"];
 
       return {
         image: (
@@ -321,7 +317,7 @@ export const POST = frames(async (ctx) => {
           >
             {token}
           </Button>
-        ));
+        )) as FrameDefinition<JsonValue>["buttons"];
 
       return {
         image: (

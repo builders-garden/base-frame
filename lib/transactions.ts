@@ -1,16 +1,15 @@
 import {
   createPublicClient,
   encodeFunctionData,
-  erc20Abi,
   http,
   parseEther,
   parseUnits,
 } from "viem";
 import { base, baseSepolia } from "viem/chains";
-import { TOKENS } from "./tokens";
-import { ENSO_ROUTER_ADDRESS, checkTokenDecimals } from "./utils";
-import { NATIVE_TOKEN } from "./utils";
-import { ERC20_ABI, ERC721_ABI } from "./abis";
+import { TOKENS } from "@/lib/tokens";
+import { ENSO_ROUTER_ADDRESS, checkTokenDecimals } from "@/lib/utils";
+import { NATIVE_TOKEN } from "@/lib/utils";
+import { ERC20_ABI, ERC721_ABI } from "@/lib/abis";
 import { NextResponse } from "next/server";
 
 export const CHAIN_ID = process.env.CHAIN_ID

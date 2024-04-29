@@ -1,16 +1,9 @@
 import { TransactionTargetResponse } from "frames.js";
 import { getFrameMessage } from "frames.js/next/server";
 import { NextRequest, NextResponse } from "next/server";
-import {
-  Abi,
-  createPublicClient,
-  encodeFunctionData,
-  getContract,
-  http,
-} from "viem";
-import { base, baseSepolia } from "viem/chains";
-import { storageRegistryABI } from "@/lib/contracts/storage-registry";
-import { CHAIN_ID, publicClient } from "@/lib/transactions";
+import { Abi, encodeFunctionData, getContract, http } from "viem";
+import { publicClient } from "@/lib/transactions";
+import { ERC20_ABI } from "@/lib/abis";
 
 export async function POST(
   req: NextRequest
@@ -27,7 +20,7 @@ export async function POST(
   const units = BigInt(1);
 
   const calldata = encodeFunctionData({
-    abi: storageRegistryABI,
+    abi: ERC20_ABI,
     functionName: "rent",
     args: [BigInt(frameMessage.requesterFid), units],
   });
@@ -36,7 +29,7 @@ export async function POST(
 
   const storageRegistry = getContract({
     address: STORAGE_REGISTRY_ADDRESS,
-    abi: storageRegistryABI,
+    abi: ERC20_ABI,
     client: publicClient,
   });
 
@@ -46,10 +39,10 @@ export async function POST(
     chainId: "eip155:10", // OP Mainnet 10
     method: "eth_sendTransaction",
     params: {
-      abi: storageRegistryABI as Abi,
+      abi: ERC20_ABI as Abi,
       to: STORAGE_REGISTRY_ADDRESS,
       data: calldata,
-      value: unitPrice.toString(),
+      value: "unitPrice",
     },
   });
 }
