@@ -19,7 +19,6 @@ export async function swap(
   const fee = process.env.FEE || 0;
   const feeReceiver = process.env.FEE_RECEIVER || "0x0000000000000000000000000000000000000000";
   const tokenInDecimals = await checkTokenDecimals(tokenInAddress, chainId.toString());
-  const tokenOutDecimals = await checkTokenDecimals(tokenOutAddress, chainId.toString());
   const amountIn = parseUnits(amount, tokenInDecimals).toString();
 
   //Adjust tokenIn if it is the native token
@@ -55,13 +54,13 @@ export async function swap(
     console.log(data, "data");
 
     return {
-      fromChainId: chainId,
-      fromAmount: amount,
+      chainId: chainId,
+      receiver: fromAddress,
+      fromAmount: amountIn,
       fromToken: tokenInAddress,
-      from: fromAddress,
-      toChainId: chainId,
       toAmount: data.amountOut,
       toToken: tokenOutAddress,
+      from: fromAddress,
       to: data.tx.to,
       value: data.tx.value,
       data: data.tx.data,
