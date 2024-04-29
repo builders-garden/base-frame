@@ -13,12 +13,15 @@ export async function allowanceForSwap(
     fromAddress: string,
 ) {
     const chainId = process.env.CHAIN_ID || 8453;
+
     let tokenInAddress = TOKENS[chainId as number][tokenIn];
     const tokenInDecimals = await checkTokenDecimals(tokenInAddress, chainId.toString());
     const amountIn = parseUnits(amount, tokenInDecimals).toString();
     // if tokenIn is the native token, send the transaction directly
     if (tokenInAddress === NATIVE_TOKEN) {
-        //return
+        return {
+            allowance: true,
+        }
     }
     // get token allowance
     const publicClient = createPublicClient({
@@ -56,7 +59,9 @@ export async function allowance(
     const amountIn = parseUnits(amount, tokenInDecimals).toString();
     // if tokenIn is the native token, send the transaction directly
     if (tokenInAddress === NATIVE_TOKEN) {
-        //return
+        return {
+            allowance: true,
+        }
     }
     // get token allowance
     const publicClient = createPublicClient({
@@ -95,7 +100,7 @@ export async function approve(
     const amountIn = parseUnits(amount, tokenInDecimals).toString();
     // if tokenIn is the native token, send the transaction directly
     if (tokenInAddress === NATIVE_TOKEN) {
-        //return
+        throw new Error("Native token cannot be approved");
     }
 
     const approveData = encodeFunctionData({
@@ -128,9 +133,9 @@ export async function approveForSwap(
     const spenderAddress = ENSO_ROUTER_ADDRESS
     // if tokenIn is the native token, send the transaction directly
     if (tokenInAddress === NATIVE_TOKEN) {
-        //return
+        throw new Error("Native token cannot be approved");
     }
-
+    
     const approveData = encodeFunctionData({
         abi: ERC20_ABI,
         functionName: "approve",
