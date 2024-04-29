@@ -3,7 +3,9 @@ import { frames } from "@/app/frames/frames";
 
 const handleRequest = frames(async (ctx) => {
   const transactionType = ctx.url.searchParams.get("transaction_type");
-  if (!transactionType || !["send", "swap", "mint"].includes(transactionType)) {
+  const isValidTransactionType =
+    transactionType && ["send", "swap", "mint"].includes(transactionType);
+  if (!isValidTransactionType) {
     return {
       image: (
         <div tw="flex flex-col">
@@ -17,21 +19,21 @@ const handleRequest = frames(async (ctx) => {
         <Button
           action="post"
           key="1"
-          target="/transaction?transaction_type=send&amount=1&token=USDC"
+          target="/transaction?transaction_type=send"
         >
           Send
         </Button>,
         <Button
           action="post"
           key="2"
-          target="/transaction?transaction_type=swap&amount_from=1&token_from=USDC&token_to=USDT"
+          target="/transaction?transaction_type=swap"
         >
           Swap
         </Button>,
         <Button
           action="post"
           key="3"
-          target="/transaction?transaction_type=mint?collection=0x123&token_id=1"
+          target="/transaction?transaction_type=mint"
         >
           Mint
         </Button>,
