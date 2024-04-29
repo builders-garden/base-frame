@@ -1,10 +1,77 @@
 
 import { encodeFunctionData, erc20Abi, parseEther, parseUnits } from "viem";
 import { TOKENS } from "./tokens";
-import { checkTokenDecimals } from "./utils";
+import { ENSO_ROUTER_ADDRESS, checkTokenDecimals } from "./utils";
 import { NATIVE_TOKEN } from "./utils";
 import { ERC20_ABI, ERC721_ABI } from "./abis";
 import { NextResponse } from "next/server";
+
+
+// Approve function 
+export async function approve(
+    tokenIn: string,
+    amount: string,
+    spenderAddress: string
+) {
+
+    const chainId = process.env.CHAIN_ID || 8453;
+    let tokenInAddress = TOKENS[chainId as number][tokenIn];
+    const tokenInDecimals = await checkTokenDecimals(tokenInAddress, chainId.toString());
+    const amountIn = parseUnits(amount, tokenInDecimals).toString();
+    // if tokenIn is the native token, send the transaction directly
+    if (tokenInAddress === NATIVE_TOKEN) {
+        //return
+    }
+
+    const approveData = encodeFunctionData({
+        abi: ERC20_ABI,
+        functionName: "approve",
+        args: [spenderAddress, amountIn],
+    });
+    return NextResponse.json({
+        chainId: "eip:155:" + chainId,
+        method: "eth_sendTransaction",
+        params: {
+          abi: ERC20_ABI,
+          to: tokenInAddress,
+          data: approveData,
+          value: "0",
+        },
+    });
+}
+
+// Approve for swap function 
+export async function approveForSwap(
+    tokenIn: string,
+    amount: string,
+) {
+
+    const chainId = process.env.CHAIN_ID || 8453;
+    let tokenInAddress = TOKENS[chainId as number][tokenIn];
+    const tokenInDecimals = await checkTokenDecimals(tokenInAddress, chainId.toString());
+    const amountIn = parseUnits(amount, tokenInDecimals).toString();
+    const spenderAddress = ENSO_ROUTER_ADDRESS
+    // if tokenIn is the native token, send the transaction directly
+    if (tokenInAddress === NATIVE_TOKEN) {
+        //return
+    }
+
+    const approveData = encodeFunctionData({
+        abi: ERC20_ABI,
+        functionName: "approve",
+        args: [spenderAddress, amountIn],
+    });
+    return NextResponse.json({
+        chainId: "eip:155:" + chainId,
+        method: "eth_sendTransaction",
+        params: {
+          abi: ERC20_ABI,
+          to: tokenInAddress,
+          data: approveData,
+          value: "0",
+        },
+    });
+}
 
 // Transfer function 
 export async function transfer(

@@ -73,3 +73,4 @@ function chainParser(chain: string): any {
 
 export const NATIVE_TOKEN = "0x0000000000000000000000000000000000000000"
 export const ENSO_NATIVE_TOKEN = "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+export const ENSO_ROUTER_ADDRESS = "0x80EbA3855878739F4710233A8a19d89Bdd2ffB8E"
