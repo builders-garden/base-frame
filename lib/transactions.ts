@@ -1,10 +1,85 @@
 
-import { encodeFunctionData, erc20Abi, parseEther, parseUnits } from "viem";
+import { createPublicClient, encodeFunctionData, erc20Abi, http, parseEther, parseUnits } from "viem";
 import { TOKENS } from "./tokens";
 import { ENSO_ROUTER_ADDRESS, checkTokenDecimals } from "./utils";
 import { NATIVE_TOKEN } from "./utils";
 import { ERC20_ABI, ERC721_ABI } from "./abis";
 import { NextResponse } from "next/server";
+
+// Allowance for swap function 
+export async function allowanceForSwap(
+    tokenIn: string,
+    amount: string,
+    fromAddress: string,
+) {
+    const chainId = process.env.CHAIN_ID || 8453;
+    let tokenInAddress = TOKENS[chainId as number][tokenIn];
+    const tokenInDecimals = await checkTokenDecimals(tokenInAddress, chainId.toString());
+    const amountIn = parseUnits(amount, tokenInDecimals).toString();
+    // if tokenIn is the native token, send the transaction directly
+    if (tokenInAddress === NATIVE_TOKEN) {
+        //return
+    }
+    // get token allowance
+    const publicClient = createPublicClient({
+        chain: chainParser(chainId),
+        transport: http(),
+    });
+    const allowance = (await publicClient.readContract({
+        address: tokenInAddress as `0x${string}`,
+        abi: ERC20_ABI,
+        functionName: "allowance",
+        args: [fromAddress, ENSO_ROUTER_ADDRESS],
+    })) as bigint;
+    // if allowance is less than amountIn, return false
+    if (BigInt(amountIn) > allowance) {
+        return {
+            allowance: false,
+        }
+    } else {
+        return {
+            allowance: true,
+        }
+    }
+}
+
+// Allowance for swap function 
+export async function allowance(
+    tokenIn: string,
+    amount: string,
+    fromAddress: string,
+    spenderAddress: string
+) {
+    const chainId = process.env.CHAIN_ID || 8453;
+    let tokenInAddress = TOKENS[chainId as number][tokenIn];
+    const tokenInDecimals = await checkTokenDecimals(tokenInAddress, chainId.toString());
+    const amountIn = parseUnits(amount, tokenInDecimals).toString();
+    // if tokenIn is the native token, send the transaction directly
+    if (tokenInAddress === NATIVE_TOKEN) {
+        //return
+    }
+    // get token allowance
+    const publicClient = createPublicClient({
+        chain: chainParser(chainId),
+        transport: http(),
+    });
+    const allowance = (await publicClient.readContract({
+        address: tokenInAddress as `0x${string}`,
+        abi: ERC20_ABI,
+        functionName: "allowance",
+        args: [fromAddress, spenderAddress],
+    })) as bigint;
+    // if allowance is less than amountIn, return false
+    if (BigInt(amountIn) > allowance) {
+        return {
+            allowance: false,
+        }
+    } else {
+        return {
+            allowance: true,
+        }
+    }
+}
 
 
 // Approve function 
@@ -131,4 +206,8 @@ export async function mint721(
           value: valueAmount,
         },
     });
+}
+
+function chainParser(chainId: string | number): any {
+    throw new Error("Function not implemented.");
 }
