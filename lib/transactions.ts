@@ -1,9 +1,10 @@
 
-import { encodeFunctionData, parseEther, parseUnits } from "viem";
+import { encodeFunctionData, erc20Abi, parseEther, parseUnits } from "viem";
 import { TOKENS } from "./tokens";
 import { checkTokenDecimals } from "./utils";
 import { NATIVE_TOKEN } from "./utils";
 import { ERC20_ABI, ERC721_ABI } from "./abis";
+import { NextResponse } from "next/server";
 
 // Transfer function 
 export async function transfer(
@@ -22,17 +23,16 @@ export async function transfer(
         functionName: "transfer",
         args: [receiverAddress, amountIn],
       });
-
-    return {
-      chainId: chainId,
-      receiver: receiverAddress,
-      fromAmount: amountIn,
-      fromToken: tokenInAddress,
-      from: fromAddress,
-      to: tokenInAddress,
-      value: tokenInAddress === NATIVE_TOKEN ? amountIn : "0",
-      data: tokenInAddress === NATIVE_TOKEN ? "" : transferData,
-    };
+    return NextResponse.json({
+        chainId: "eip:155:" + chainId,
+        method: "eth_sendTransaction",
+        params: {
+          abi: ERC20_ABI,
+          to: tokenInAddress,
+          data: tokenInAddress === NATIVE_TOKEN ? "" : transferData,
+          value: tokenInAddress === NATIVE_TOKEN ? amountIn : "0",
+        },
+    });
 }
 
 // ERC721 mint function 
@@ -56,12 +56,14 @@ export async function mint721(
         args: [receiverAddress, tokenId],
     });
 
-    return {
-      chainId: chainId,
-      receiver: receiverAddress,
-      from: fromAddress,
-      to: tokenIn,
-      value: valueAmount,
-      data: mintData,
-    };
+    return NextResponse.json({
+        chainId: "eip:155:" + chainId,
+        method: "eth_sendTransaction",
+        params: {
+          abi: ERC721_ABI,
+          to: tokenIn,
+          data: mintData,
+          value: valueAmount,
+        },
+    });
 }

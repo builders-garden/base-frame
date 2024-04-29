@@ -4,6 +4,8 @@ import { TOKENS } from "../tokens";
 import { ApiResponse } from "./interface";
 import { checkTokenDecimals } from "../utils";
 import { NATIVE_TOKEN, ENSO_NATIVE_TOKEN } from "../utils";
+import { NextResponse } from "next/server";
+import { ENSO_ROUTER_ABI } from "../abis";
 
 // Swap function 
 export async function swap(
@@ -53,18 +55,16 @@ export async function swap(
     const data = (await response.json()) as ApiResponse;
     console.log(data, "data");
 
-    return {
-      chainId: chainId,
-      receiver: fromAddress,
-      fromAmount: amountIn,
-      fromToken: tokenInAddress,
-      toAmount: data.amountOut,
-      toToken: tokenOutAddress,
-      from: fromAddress,
-      to: data.tx.to,
-      value: data.tx.value,
-      data: data.tx.data,
-    };
+    return NextResponse.json({
+      chainId: "eip:155:" + chainId,
+      method: "eth_sendTransaction",
+      params: {
+        abi: ENSO_ROUTER_ABI,
+        to: data.tx.to,
+        data: data.tx.data,
+        value: data.tx.value,
+      },
+    });
   } catch (error) {
     console.log(error);
     throw new Error("Enso: route request failed");
