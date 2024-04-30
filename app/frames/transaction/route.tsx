@@ -4,11 +4,7 @@ import { frames } from "@/app/frames/frames";
 import { TOKENS, isApprovedToken } from "@/lib/tokens";
 import { getTokenBalance } from "@/lib/utils";
 import { isAddress, formatEther } from "viem";
-import {
-  CHAIN_ID,
-  allowanceForSend,
-  allowanceForSwap,
-} from "@/lib/transactions";
+import { CHAIN_ID, allowanceForSwap } from "@/lib/transactions";
 import { getNftData } from "@/lib/nft-mint";
 
 export const POST = frames(async (ctx) => {
@@ -242,7 +238,7 @@ export const POST = frames(async (ctx) => {
             <Button
               action="tx"
               key="1"
-              target={`/swap-complete?transaction_type=swap&token_from=${tokenFrom}&token_to=${tokenTo}&amount=${amount}`}
+              target={`/swap-complete?transaction_type=swap&token_from=${tokenFrom}&token_to=${tokenTo}&amount=${amount}&user_address=${userAddress}`}
               post_url="/transaction-result"
             >
               Complete swap
@@ -371,31 +367,33 @@ export const POST = frames(async (ctx) => {
 
     // receiverAddress, token and amount are valid
     if (isValidReceiverAddress && isValidToken && isValidAmount) {
-      const { allowance } = await allowanceForSend(
-        token,
-        amount,
-        userAddress,
-        receiverAddress
+      const userBalance = await getTokenBalance(userAddress, token);
+      const formattedBalance = formatEther(
+        userBalance as unknown as bigint,
+        "wei"
       );
 
-      if (!allowance) {
+      if (BigInt(formattedBalance) < BigInt(amount)) {
         return {
           image: (
             <div tw="flex flex-col text-center items-center align-middle">
               <p tw="text-6xl text-balance">Approve Send</p>
-              <p tw="text-3xl text-balance">
-                You are sending {amount} {token} to {receiverAddress}
+              <p tw="text-3xl w-[70vw] mx-auto text-balance">
+                You have {formattedBalance} {amount} but you need at least{" "}
+                {amount} {token}
+              </p>
+              <p tw="text-3xl w-[70vw] mx-auto text-balance">
+                Replenish your Base account {userAddress} and try again
               </p>
             </div>
           ),
           buttons: [
             <Button
-              action="tx"
+              action="post"
               key="1"
-              target={`/send-approval?transaction_type=send&receiver=${receiverAddress}&token=${token}&amount=${amount}`}
-              post_url={`/transaction?transaction_type=send&receiver=${receiverAddress}&token=${token}&amount=${amount}`}
+              target={`/transaction?transaction_type=send&receiver=${receiverAddress}&token=${token}&amount=${amount}`}
             >
-              Approve swap
+              Refresh balance
             </Button>,
           ],
         };
@@ -413,7 +411,7 @@ export const POST = frames(async (ctx) => {
             <Button
               action="tx"
               key="1"
-              target={`/send-complete?transaction_type=send&receiver=${receiverAddress}&token=${token}&amount=${amount}`}
+              target={`/send-complete?transaction_type=send&receiver_address=${receiverAddress}&token=${token}&amount=${amount}`}
               post_url="/transaction-result"
             >
               Complete send
@@ -508,7 +506,8 @@ export const POST = frames(async (ctx) => {
           <Button
             action="tx"
             key="1"
-            target={`/transaction?transaction_type=mint&collection=${collectionAddress}&token_id=${tokenId}`}
+            target={`/mint-complete?transaction_type=mint&collection=${collectionAddress}&token_id=${tokenId}&user_address=${userAddress}`}
+            post_url={`/transaction-result?transaction_type=mint&collection=${collectionAddress}&token_id=${tokenId}`}
           >
             Confirm mint
           </Button>,

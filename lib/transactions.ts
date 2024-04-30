@@ -1,4 +1,3 @@
-import { NextResponse } from "next/server";
 import { utils } from "ethers";
 import { createPublicClient, encodeFunctionData, http, parseUnits } from "viem";
 import { base, baseSepolia } from "viem/chains";
@@ -9,6 +8,7 @@ import {
   MERKLE_MINT_SALE_STRATEGY,
   checkTokenDecimals,
   NATIVE_TOKEN,
+  getTokenBalance,
 } from "@/lib/utils";
 import {
   ERC1155_CONTRACT_ABI,
@@ -27,12 +27,16 @@ export const publicClient = createPublicClient({
 });
 
 // Allowance for send function
-export async function allowanceForSend(
+export async function allowance(
   tokenIn: string,
   amount: string,
   fromAddress: string,
   spenderAddress: string
 ) {
+  if (!tokenIn || !amount || !fromAddress || !spenderAddress) {
+    throw new Error("Invalid allowance parameters");
+  }
+
   let tokenInAddress = TOKENS[CHAIN_ID as number][tokenIn];
   // if tokenIn is the native token, send the transaction directly
   if (tokenInAddress === NATIVE_TOKEN) {
@@ -69,7 +73,7 @@ export async function allowanceForSwap(
   amount: string,
   fromAddress: string
 ) {
-  return allowanceForSend(tokenIn, amount, fromAddress, ENSO_ROUTER_ADDRESS);
+  return allowance(tokenIn, amount, fromAddress, ENSO_ROUTER_ADDRESS);
 }
 
 // Approve function
@@ -78,6 +82,10 @@ export async function approve(
   amount: string,
   spenderAddress: string
 ) {
+  if (!tokenIn || !amount || !spenderAddress) {
+    throw new Error("Invalid approve parameters");
+  }
+
   let tokenInAddress = TOKENS[CHAIN_ID as number][tokenIn];
   // if tokenIn is the native token, send the transaction directly
   if (tokenInAddress === NATIVE_TOKEN) {
@@ -92,8 +100,8 @@ export async function approve(
     args: [spenderAddress as `0x${string}`, amountIn],
   });
 
-  return NextResponse.json({
-    chainId: "eip:155:" + CHAIN_ID,
+  return {
+    chainId: "eip:155:".concat(CHAIN_ID.toString()),
     method: "eth_sendTransaction",
     params: {
       abi: ERC20_ABI,
@@ -101,7 +109,7 @@ export async function approve(
       data: approveData,
       value: "0",
     },
-  });
+  };
 }
 
 // Approve for swap function
@@ -115,6 +123,15 @@ export async function transfer(
   amount: string,
   receiverAddress: string
 ) {
+  if (!tokenIn || !amount || !receiverAddress) {
+    throw new Error("Invalid transfer parameters");
+  }
+
+  const balance = await getTokenBalance(receiverAddress, tokenIn);
+  if (BigInt(balance) < BigInt(amount)) {
+    throw new Error("Insufficient balance");
+  }
+
   let tokenInAddress = TOKENS[CHAIN_ID as number][tokenIn];
   const tokenInDecimals = await checkTokenDecimals(tokenInAddress);
   const amountIn = parseUnits(amount, tokenInDecimals);
@@ -124,8 +141,8 @@ export async function transfer(
     args: [receiverAddress as `0x${string}`, amountIn],
   });
 
-  return NextResponse.json({
-    chainId: "eip:155:" + CHAIN_ID,
+  return {
+    chainId: "eip:155:".concat(CHAIN_ID.toString()),
     method: "eth_sendTransaction",
     params: {
       abi: ERC20_ABI,
@@ -133,7 +150,7 @@ export async function transfer(
       data: tokenInAddress === NATIVE_TOKEN ? "" : transferData,
       value: tokenInAddress === NATIVE_TOKEN ? amountIn : "0",
     },
-  });
+  };
 }
 
 // ERC1155 Zora mint function
@@ -143,6 +160,10 @@ export async function mint1155(
   fromAddress: string,
   amount?: string
 ) {
+  if (!collectionAddress || !tokenId || !fromAddress) {
+    throw new Error("Invalid mint parameters");
+  }
+
   let merkleMintStrategy;
   let valueAmount;
   // check if the collection follow the fixed price strategy
@@ -207,8 +228,8 @@ export async function mint1155(
       ],
     });
 
-    return NextResponse.json({
-      chainId: "eip:155:" + CHAIN_ID,
+    return {
+      chainId: "eip:155:".concat(CHAIN_ID.toString()),
       method: "eth_sendTransaction",
       params: {
         abi: ERC1155_CONTRACT_ABI,
@@ -216,7 +237,7 @@ export async function mint1155(
         data: mintData,
         value: valueAmount,
       },
-    });
+    };
   }
 
   // if the collection is following the markle mint strategy, mint the token
