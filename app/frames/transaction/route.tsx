@@ -61,24 +61,27 @@ export const POST = frames(async (ctx) => {
       buttons: [
         <Button
           action="post"
-          key="1"
-          target={{ query: { transaction_type: "send" } }}
-        >
-          Send
-        </Button>,
-        <Button
-          action="post"
           key="2"
-          target={{ query: { transaction_type: "swap" } }}
+          target="/transaction?transaction_type=swap"
         >
           Swap
         </Button>,
         <Button
           action="post"
+          key="1"
+          target="/transaction?transaction_type=send"
+        >
+          Send
+        </Button>,
+        <Button
+          action="post"
           key="3"
-          target={{ query: { transaction_type: "mint" } }}
+          target="/transaction?transaction_type=mint"
         >
           Mint
+        </Button>,
+        <Button action="post" key="4" target="/info">
+          Learn More
         </Button>,
       ],
     };
@@ -217,7 +220,7 @@ export const POST = frames(async (ctx) => {
               action="tx"
               key="1"
               target={`/swap-approval?transaction_type=swap&token_from=${tokenFrom}&token_to=${tokenTo}&amount=${amount}`}
-              post_url={`/transaction-result?transaction_type=swap&token_from=${tokenFrom}&token_to=${tokenTo}&amount=${amount}`}
+              post_url={`/transaction?transaction_type=swap&token_from=${tokenFrom}&token_to=${tokenTo}&amount=${amount}`}
             >
               Approve swap
             </Button>,
