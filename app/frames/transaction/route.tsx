@@ -20,7 +20,7 @@ export const POST = frames(async (ctx) => {
     // };
   }
 
-  const userAddress = ctx.message?.requesterVerifiedAddresses[1];
+  const userAddress = ctx.message?.requesterVerifiedAddresses[0];
 
   // user not connected
   if (!userAddress) {
