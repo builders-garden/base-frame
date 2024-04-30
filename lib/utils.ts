@@ -71,6 +71,7 @@ export async function getTokenBalance(address: string, token: string) {
 
     return balance;
   }
+
   const balance = (await publicClient.readContract({
     address: tokenAddress as `0x${string}`,
     abi: ERC20_ABI,
@@ -81,6 +82,8 @@ export async function getTokenBalance(address: string, token: string) {
   return balance;
 }
 
-export const NATIVE_TOKEN = "0x0000000000000000000000000000000000000000";
-export const ENSO_NATIVE_TOKEN = "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee";
-export const ENSO_ROUTER_ADDRESS = "0x80EbA3855878739F4710233A8a19d89Bdd2ffB8E";
+export const NATIVE_TOKEN: `0x${string}` = "0x0000000000000000000000000000000000000000";
+export const ENSO_NATIVE_TOKEN : `0x${string}` = "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee";
+export const ENSO_ROUTER_ADDRESS : `0x${string}` = "0x80EbA3855878739F4710233A8a19d89Bdd2ffB8E";
+export const FIXED_PRICE_SALE_STRATEGY: `0x${string}` = "0x04E2516A2c207E84a1839755675dfd8eF6302F0a";
+export const MERKLE_MINT_SALE_STRATEGY: `0x${string}` = "0xf48172CA3B6068B20eE4917Eb27b5472f1f272C7";
