@@ -188,30 +188,33 @@ export async function mint1155(
   fromAddress: string,
   amount?: string
 ) {
-    let isMerkleMintStrategy;
+    let merkleMintStrategy;
     let valueAmount;
     // check if the collection follow the fixed price strategy 
-    const isFixedPriceStrategy = await publicClient.readContract({
+    const fixedPriceStrategy = await publicClient.readContract({
       address: FIXED_PRICE_SALE_STRATEGY,
       abi: ZORA_FIXED_PRICE_STRATEGY_ABI,
       functionName: "sale",
       args: [collectionAddress as `0x${string}`, BigInt(tokenId)],
     });
+    const isFixedPriceStrategy = fixedPriceStrategy.pricePerToken !== BigInt(0);
     // if the collection is not following the fixed price strategy, check if it is following the markle mint strategy
     if (!isFixedPriceStrategy) {
-      isMerkleMintStrategy = await publicClient.readContract({
+      merkleMintStrategy = await publicClient.readContract({
         address: MERKLE_MINT_SALE_STRATEGY,
         abi: ZORA_MERKLE_MINT_STRATEGY_ABI,
         functionName: "sale",
         args: [collectionAddress as `0x${string}`, BigInt(tokenId)],
       });
     }
+    const isMerkleMintStrategy = merkleMintStrategy?.merkleRoot !== NATIVE_TOKEN;
+
     // if the collection is not following the markle mint strategy, throw an error
     if (!isFixedPriceStrategy && !isMerkleMintStrategy) {
       throw new Error("Zora Collection is not following a supported mint strategy");
     }
-    // check mint referral address
-    const mintReferralAddress = process.env.MINT_REFERRAL_ADDRESS as `0x${string}` || NATIVE_TOKEN;
+    // get mint referral address
+    const mintReferralAddress = fixedPriceStrategy.fundsRecipient;
     // token amount to mint
     const mintAmount = amount ? parseUnits(amount, 18) : parseUnits("1", 18);
     // if the collection is following the fixed price strategy, mint the token
@@ -223,7 +226,7 @@ export async function mint1155(
             functionName: "mintFee",
         });
         // calculate the token price
-        const tokenPrice = isFixedPriceStrategy.pricePerToken;
+        const tokenPrice = fixedPriceStrategy.pricePerToken;
         // calculate the value amount
         valueAmount = (fee + tokenPrice) * mintAmount;
         // build minter arguments
