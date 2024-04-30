@@ -44,6 +44,10 @@ export function createDebugUrl(frameURL: string | URL): string {
 export async function checkTokenDecimals(
   tokenAddress: string
 ): Promise<number> {
+  if (!tokenAddress) {
+    throw new Error("Token address is required");
+  }
+
   if (tokenAddress === NATIVE_TOKEN) {
     return 18;
   }
@@ -62,6 +66,10 @@ export async function checkTokenDecimals(
 }
 
 export async function getTokenBalance(address: string, token: string) {
+  if (!address || !token) {
+    throw new Error("Address and token are required");
+  }
+
   const tokenAddress = TOKENS[CHAIN_ID as number][token];
   if (tokenAddress === NATIVE_TOKEN) {
     const balance = (await publicClient.getBalance({

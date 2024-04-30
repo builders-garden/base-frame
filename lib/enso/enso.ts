@@ -58,7 +58,7 @@ export async function swap(
     console.log(data, "data");
 
     return NextResponse.json({
-      chainId: "eip:155:" + CHAIN_ID,
+      chainId: "eip155:" + CHAIN_ID,
       method: "eth_sendTransaction",
       params: {
         abi: ENSO_ROUTER_ABI,

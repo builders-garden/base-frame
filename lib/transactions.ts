@@ -46,7 +46,7 @@ export async function allowance(
   }
 
   const tokenInDecimals = await checkTokenDecimals(tokenInAddress);
-  const amountIn = parseUnits(amount, tokenInDecimals).toString();
+  const amountIn = parseUnits(amount, tokenInDecimals);
   // get token allowance
   const allowance = (await publicClient.readContract({
     address: tokenInAddress as `0x${string}`,
@@ -56,7 +56,7 @@ export async function allowance(
   })) as bigint;
 
   // if allowance is less than amountIn, return false
-  if (BigInt(amountIn) > allowance) {
+  if (amountIn > allowance) {
     return {
       allowance: false,
     };
@@ -101,7 +101,7 @@ export async function approve(
   });
 
   return {
-    chainId: "eip:155:".concat(CHAIN_ID.toString()),
+    chainId: "eip155:".concat(CHAIN_ID.toString()),
     method: "eth_sendTransaction",
     params: {
       abi: ERC20_ABI,
@@ -127,14 +127,15 @@ export async function transfer(
     throw new Error("Invalid transfer parameters");
   }
 
-  const balance = await getTokenBalance(receiverAddress, tokenIn);
-  if (BigInt(balance) < BigInt(amount)) {
-    throw new Error("Insufficient balance");
-  }
-
   let tokenInAddress = TOKENS[CHAIN_ID as number][tokenIn];
   const tokenInDecimals = await checkTokenDecimals(tokenInAddress);
   const amountIn = parseUnits(amount, tokenInDecimals);
+
+  const balance = await getTokenBalance(receiverAddress, tokenIn);
+  if (balance < amountIn) {
+    throw new Error("Insufficient balance");
+  }
+
   const transferData = encodeFunctionData({
     abi: ERC20_ABI,
     functionName: "transfer",
@@ -142,7 +143,7 @@ export async function transfer(
   });
 
   return {
-    chainId: "eip:155:".concat(CHAIN_ID.toString()),
+    chainId: "eip155:".concat(CHAIN_ID.toString()),
     method: "eth_sendTransaction",
     params: {
       abi: ERC20_ABI,
@@ -229,7 +230,7 @@ export async function mint1155(
     });
 
     return {
-      chainId: "eip:155:".concat(CHAIN_ID.toString()),
+      chainId: "eip155:".concat(CHAIN_ID.toString()),
       method: "eth_sendTransaction",
       params: {
         abi: ERC1155_CONTRACT_ABI,
