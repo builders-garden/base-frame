@@ -4,7 +4,12 @@ import { frames } from "@/app/frames/frames";
 import { TOKENS, isApprovedToken } from "@/lib/tokens";
 import { getTokenBalance } from "@/lib/utils";
 import { isAddress, formatEther } from "viem";
-import { CHAIN_ID, allowanceForSwap } from "@/lib/transactions";
+import {
+  CHAIN_ID,
+  allowanceForSend,
+  allowanceForSwap,
+} from "@/lib/transactions";
+import { getNftData } from "@/lib/nft-mint";
 
 export const POST = frames(async (ctx) => {
   if (!ctx?.message?.isValid) {
@@ -86,23 +91,21 @@ export const POST = frames(async (ctx) => {
 
   // swap transaction
   if (transactionType == "swap") {
-    const tokenFrom = ctx.url.searchParams.get("token_from");
+    const tokenFrom = ctx.url.searchParams.get("token_from") || "";
     const isValidTokenFrom =
-      !!tokenFrom && isApprovedToken(CHAIN_ID, tokenFrom || "");
+      !!tokenFrom && isApprovedToken(CHAIN_ID, tokenFrom);
 
-    const tokenTo = ctx.url.searchParams.get("token_to");
-    const isValidTokenTo =
-      !!tokenTo && isApprovedToken(CHAIN_ID, tokenTo || "");
+    const tokenTo = ctx.url.searchParams.get("token_to") || "";
+    const isValidTokenTo = !!tokenTo && isApprovedToken(CHAIN_ID, tokenTo);
 
-    const amount = ctx.message?.inputText || ctx.url.searchParams.get("amount");
+    const amount =
+      ctx.url.searchParams.get("amount") || ctx.message?.inputText || "";
     const isValidAmount =
       !!amount && !isNaN(parseFloat(amount)) && parseFloat(amount) > 0.0;
-    console.log("isValidAmount", isValidAmount, "amount", amount);
 
-    if (!tokenFrom || !isValidTokenFrom) {
-      const buttons = Object.keys(TOKENS[CHAIN_ID])
-        .slice(0, 4)
-        .map((token, index) => (
+    if (!isValidTokenFrom) {
+      const buttons = Object.keys(TOKENS[CHAIN_ID as number]).map(
+        (token, index) => (
           <Button
             action="post"
             key={`${index + 1}`}
@@ -110,7 +113,8 @@ export const POST = frames(async (ctx) => {
           >
             {token}
           </Button>
-        )) as FrameDefinition<JsonValue>["buttons"];
+        )
+      ) as FrameDefinition<JsonValue>["buttons"];
 
       return {
         image: (
@@ -128,10 +132,9 @@ export const POST = frames(async (ctx) => {
     }
 
     // tokenFrom is valid
-    if (!tokenTo || !isValidTokenTo) {
-      const buttonsFiltered = Object.keys(TOKENS[CHAIN_ID])
+    if (isValidTokenFrom && !isValidTokenTo) {
+      const buttonsFiltered = Object.keys(TOKENS[CHAIN_ID as number])
         .filter((token) => token !== tokenFrom)
-        .slice(0, 4)
         .map((token, index) => (
           <Button
             action="post"
@@ -161,7 +164,7 @@ export const POST = frames(async (ctx) => {
     }
 
     // tokenFrom and tokenTo are valid
-    if (!amount || !isValidAmount) {
+    if (isValidTokenFrom && isValidTokenTo && !isValidAmount) {
       // user connected, check balance
       const userBalance = await getTokenBalance(userAddress, tokenFrom);
       const formattedBalance = formatEther(
@@ -270,15 +273,16 @@ export const POST = frames(async (ctx) => {
 
   // send transaction
   if (transactionType == "send") {
-    const recipientAddress =
-      ctx.url.searchParams.get("recipient") || ctx.message?.inputText;
+    const receiverAddress =
+      ctx.url.searchParams.get("receiver") || ctx.message?.inputText || "";
     const isValidReceiverAddress =
-      !!recipientAddress && isAddress(recipientAddress || "");
+      !!receiverAddress && isAddress(receiverAddress);
 
-    const token = ctx.url.searchParams.get("token");
-    const isValidToken = !!token && isApprovedToken(CHAIN_ID, token || "");
+    const token = ctx.url.searchParams.get("token") || "";
+    const isValidToken = !!token && isApprovedToken(CHAIN_ID, token);
 
-    const amount = ctx.url.searchParams.get("amount") || ctx.message?.inputText;
+    const amount =
+      ctx.url.searchParams.get("amount") || ctx.message?.inputText || "";
     const isValidAmount =
       !!amount && !isNaN(parseFloat(amount)) && parseFloat(amount) > 0.0;
 
@@ -288,11 +292,11 @@ export const POST = frames(async (ctx) => {
           <div tw="flex flex-col">
             <div tw="flex flex-col text-center items-center align-middle">
               <p tw="text-6xl text-balance">XMTP Base Frame</p>
-              <p tw="text-3xl text-balance">Enter the recipient address</p>
+              <p tw="text-3xl text-balance">Enter the receiver address</p>
             </div>
           </div>
         ),
-        textInput: "recipient address 0x...",
+        textInput: "receiver address 0x...",
         buttons: [
           <Button
             action="post"
@@ -305,19 +309,19 @@ export const POST = frames(async (ctx) => {
       };
     }
 
-    // recipient address is valid
-    if (!isValidToken) {
-      const buttons = Object.keys(TOKENS[CHAIN_ID])
-        .slice(0, 4)
-        .map((token, index) => (
+    // receiver address is valid
+    if (isValidReceiverAddress && !isValidToken) {
+      const buttons = Object.keys(TOKENS[CHAIN_ID as number]).map(
+        (token, index) => (
           <Button
             action="post"
             key={`${index + 1}`}
-            target={`/transaction?transaction_type=send&recipient=${recipientAddress}&token=${token}`}
+            target={`/transaction?transaction_type=send&receiver=${receiverAddress}&token=${token}`}
           >
             {token}
           </Button>
-        )) as FrameDefinition<JsonValue>["buttons"];
+        )
+      ) as FrameDefinition<JsonValue>["buttons"];
 
       return {
         image: (
@@ -332,8 +336,8 @@ export const POST = frames(async (ctx) => {
       };
     }
 
-    // recipientAddress and token are valid
-    if (!isValidAmount) {
+    // receiverAddress and token are valid
+    if (isValidReceiverAddress && isValidToken && !isValidAmount) {
       // user connected, check balance
       const userBalance = await getTokenBalance(userAddress, token);
       const formattedBalance = formatEther(
@@ -357,7 +361,7 @@ export const POST = frames(async (ctx) => {
           <Button
             action="post"
             key="1"
-            target={`/transaction?transaction_type=send&recipient=${recipientAddress}&token=${token}`}
+            target={`/transaction?transaction_type=send&receiver=${receiverAddress}&token=${token}`}
           >
             Next
           </Button>,
@@ -365,42 +369,70 @@ export const POST = frames(async (ctx) => {
       };
     }
 
-    // recipientAddress, token and amount are valid
+    // receiverAddress, token and amount are valid
     if (isValidReceiverAddress && isValidToken && isValidAmount) {
-      return {
-        image: (
-          <div tw="flex flex-col">
-            <div tw="flex flex-col gap-1 justify-around text-center items-center align-middle">
-              <p tw="text-6xl text-balance">Send</p>
+      const { allowance } = await allowanceForSend(
+        token,
+        amount,
+        userAddress,
+        receiverAddress
+      );
+
+      if (!allowance) {
+        return {
+          image: (
+            <div tw="flex flex-col text-center items-center align-middle">
+              <p tw="text-6xl text-balance">Approve Send</p>
               <p tw="text-3xl text-balance">
-                You are sending {amount} {token}
+                You are sending {amount} {token} to {receiverAddress}
               </p>
-              <p tw="text-3xl text-balance">to {recipientAddress}</p>
             </div>
-          </div>
-        ),
-        buttons: [
-          <Button
-            action="tx"
-            key="1"
-            target={`/transaction?transaction_type=send&recipient=${recipientAddress}&token=${token}&amount=${amount}`}
-          >
-            Confirm send
-          </Button>,
-        ],
-      };
+          ),
+          buttons: [
+            <Button
+              action="tx"
+              key="1"
+              target={`/send-approval?transaction_type=send&receiver=${receiverAddress}&token=${token}&amount=${amount}`}
+              post_url={`/transaction?transaction_type=send&receiver=${receiverAddress}&token=${token}&amount=${amount}`}
+            >
+              Approve swap
+            </Button>,
+          ],
+        };
+      } else {
+        return {
+          image: (
+            <div tw="flex flex-col gap-1 justify-around text-center items-center align-middle">
+              <p tw="text-6xl text-balance">Confirm Send</p>
+              <p tw="text-3xl w-[70vw] mx-auto text-balance">
+                You are sending {amount} {token} to {receiverAddress}
+              </p>
+            </div>
+          ),
+          buttons: [
+            <Button
+              action="tx"
+              key="1"
+              target={`/send-complete?transaction_type=send&receiver=${receiverAddress}&token=${token}&amount=${amount}`}
+              post_url="/transaction-result"
+            >
+              Complete send
+            </Button>,
+          ],
+        };
+      }
     }
   }
 
   // mint transaction
   if (transactionType == "mint") {
     const collectionAddress =
-      ctx.url.searchParams.get("collection") || ctx.message?.inputText;
+      ctx.url.searchParams.get("collection") || ctx.message?.inputText || "";
     const isValidCollectionAddress =
       !!collectionAddress && isAddress(collectionAddress);
 
     const tokenId =
-      ctx.url.searchParams.get("token_id") || ctx.message?.inputText;
+      ctx.url.searchParams.get("token_id") || ctx.message?.inputText || "";
     const isValidTokenId =
       !!tokenId && !isNaN(parseFloat(tokenId)) && parseFloat(tokenId) > 0.0;
 
@@ -453,14 +485,23 @@ export const POST = frames(async (ctx) => {
 
     // collection address and tokenId are valid
     if (isValidCollectionAddress && isValidTokenId) {
+      const nftMetadata = await getNftData(collectionAddress, tokenId);
+
       return {
         image: (
           <div tw="flex flex-col text-center items-center align-middle">
             <p tw="text-6xl text-balance">Mint</p>
             <p tw="text-3xl text-balance">
-              You are minting token {tokenId} from collection{" "}
-              {collectionAddress}
+              You are minting {nftMetadata.name ? nftMetadata.name : null} token{" "}
+              {tokenId} from collection {collectionAddress}
             </p>
+            {nftMetadata.image ? (
+              <img
+                src={nftMetadata.image}
+                alt={nftMetadata.description}
+                width={"250px"}
+              />
+            ) : null}
           </div>
         ),
         buttons: [
@@ -478,20 +519,25 @@ export const POST = frames(async (ctx) => {
 
   return {
     image: (
-      <div tw="flex flex-col w-full text-center items-center align-middle">
-        <p tw="flex flex-col text-4xl text-center items-center align-middle">
-          You are
-          <span tw="text-blue-500">
-            {ctx.message?.requesterCustodyAddress ||
-              ctx.message?.verifiedWalletAddress}
-          </span>
-          from {ctx.clientProtocol?.id} and you want to do this transaction!
-        </p>
+      <div tw="flex flex-col">
+        <div tw="flex flex-col text-center items-center align-middle">
+          <p tw="text-6xl text-balance">XMTP Base Frame</p>
+          <p tw="text-3xl text-balance">What can you do with this frame?</p>
+        </div>
       </div>
     ),
     buttons: [
-      <Button action="post" key="1" target="/">
-        Home
+      <Button action="post" key="2" target="/transaction?transaction_type=swap">
+        Swap
+      </Button>,
+      <Button action="post" key="1" target="/transaction?transaction_type=send">
+        Send
+      </Button>,
+      <Button action="post" key="3" target="/transaction?transaction_type=mint">
+        Mint
+      </Button>,
+      <Button action="post" key="4" target="/info">
+        Learn More
       </Button>,
     ],
   };

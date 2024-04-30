@@ -1,10 +1,14 @@
-import { parseUnits } from "viem";
-import { TOKENS } from "../tokens";
-import { ApiResponse } from "./interface";
-import { checkTokenDecimals } from "../utils";
-import { NATIVE_TOKEN, ENSO_NATIVE_TOKEN } from "../utils";
 import { NextResponse } from "next/server";
-import { ENSO_ROUTER_ABI } from "../abis";
+import { parseUnits } from "viem";
+import { ENSO_ROUTER_ABI } from "@/lib/abis";
+import { TOKENS } from "@/lib/tokens";
+import { ApiResponse } from "@/lib/enso/interface";
+import {
+  checkTokenDecimals,
+  NATIVE_TOKEN,
+  ENSO_NATIVE_TOKEN,
+} from "@/lib/utils";
+import { CHAIN_ID } from "@/lib/transactions";
 
 // Swap function
 export async function swap(
@@ -13,13 +17,12 @@ export async function swap(
   amount: string,
   fromAddress: string
 ) {
-  const chainId = parseInt(process.env.CHAIN_ID || "") || 8453;
-  let tokenInAddress = TOKENS[chainId as number][tokenIn];
-  const tokenOutAddress = TOKENS[chainId as number][tokenOut];
+  let tokenInAddress = TOKENS[CHAIN_ID as number][tokenIn];
+  const tokenOutAddress = TOKENS[CHAIN_ID as number][tokenOut];
   const fee = process.env.FEE || 0;
   const feeReceiver =
     process.env.FEE_RECEIVER || "0x0000000000000000000000000000000000000000";
-  const tokenInDecimals = await checkTokenDecimals(tokenInAddress, chainId);
+  const tokenInDecimals = await checkTokenDecimals(tokenInAddress);
   const amountIn = parseUnits(amount, tokenInDecimals).toString();
 
   //Adjust tokenIn if it is the native token
@@ -28,7 +31,7 @@ export async function swap(
   }
 
   const baseUrl = new URL("https://api.enso.finance/api/v1/shortcuts/route");
-  baseUrl.searchParams.append("chainId", chainId.toString());
+  baseUrl.searchParams.append("chainId", CHAIN_ID.toString());
   baseUrl.searchParams.append("fromAddress", fromAddress);
   baseUrl.searchParams.append("routingStrategy", "router");
   baseUrl.searchParams.append("receiver", fromAddress);
@@ -55,7 +58,7 @@ export async function swap(
     console.log(data, "data");
 
     return NextResponse.json({
-      chainId: "eip:155:" + chainId,
+      chainId: "eip:155:" + CHAIN_ID,
       method: "eth_sendTransaction",
       params: {
         abi: ENSO_ROUTER_ABI,

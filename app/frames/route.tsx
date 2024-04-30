@@ -19,11 +19,11 @@ const handleRequest = frames(async (ctx) => {
       </div>
     ),
     buttons: [
-      <Button action="post" key="1" target="/transaction?transaction_type=send">
-        Send
-      </Button>,
       <Button action="post" key="2" target="/transaction?transaction_type=swap">
         Swap
+      </Button>,
+      <Button action="post" key="1" target="/transaction?transaction_type=send">
+        Send
       </Button>,
       <Button action="post" key="3" target="/transaction?transaction_type=mint">
         Mint
@@ -33,19 +33,6 @@ const handleRequest = frames(async (ctx) => {
       </Button>,
     ],
   };
-
-  // send
-  const amount = ctx.url.searchParams.get("amount");
-  const token = ctx.url.searchParams.get("token");
-
-  // swap
-  const amountFrom = ctx.url.searchParams.get("amount_from");
-  const tokenFrom = ctx.url.searchParams.get("token_from");
-  const tokenTo = ctx.url.searchParams.get("token_to");
-
-  // mint
-  const collection = ctx.url.searchParams.get("collection");
-  const tokenId = ctx.url.searchParams.get("token_id");
 });
 
 export const GET = handleRequest;

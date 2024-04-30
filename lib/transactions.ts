@@ -1,17 +1,21 @@
-import {
-  createPublicClient,
-  encodeFunctionData,
-  http,
-  parseEther,
-  parseUnits,
-} from "viem";
+import { NextResponse } from "next/server";
+import { utils } from "ethers";
+import { createPublicClient, encodeFunctionData, http, parseUnits } from "viem";
 import { base, baseSepolia } from "viem/chains";
 import { TOKENS } from "@/lib/tokens";
-import { ENSO_ROUTER_ADDRESS, FIXED_PRICE_SALE_STRATEGY, MERKLE_MINT_SALE_STRATEGY, checkTokenDecimals } from "@/lib/utils";
-import { NATIVE_TOKEN } from "@/lib/utils";
-import { ERC1155_CONTRACT_ABI, ERC20_ABI, ZORA_FIXED_PRICE_STRATEGY_ABI, ZORA_MERKLE_MINT_STRATEGY_ABI } from "@/lib/abis";
-import { NextResponse } from "next/server";
-import { ethers } from "ethers";
+import {
+  ENSO_ROUTER_ADDRESS,
+  FIXED_PRICE_SALE_STRATEGY,
+  MERKLE_MINT_SALE_STRATEGY,
+  checkTokenDecimals,
+  NATIVE_TOKEN,
+} from "@/lib/utils";
+import {
+  ERC1155_CONTRACT_ABI,
+  ERC20_ABI,
+  ZORA_FIXED_PRICE_STRATEGY_ABI,
+  ZORA_MERKLE_MINT_STRATEGY_ABI,
+} from "@/lib/abis";
 
 export const CHAIN_ID = process.env.CHAIN_ID
   ? parseInt(process.env.CHAIN_ID)
@@ -22,44 +26,8 @@ export const publicClient = createPublicClient({
   transport: http(),
 });
 
-// Allowance for swap function
-export async function allowanceForSwap(
-  tokenIn: string,
-  amount: string,
-  fromAddress: string
-) {
-  let tokenInAddress = TOKENS[CHAIN_ID as number][tokenIn];
-  const tokenInDecimals = await checkTokenDecimals(tokenInAddress, CHAIN_ID);
-  const amountIn = parseUnits(amount, tokenInDecimals).toString();
-  // if tokenIn is the native token, send the transaction directly
-  if (tokenInAddress === NATIVE_TOKEN) {
-    return {
-      allowance: true,
-    };
-  }
-
-  // get token allowance
-  const allowance = (await publicClient.readContract({
-    address: tokenInAddress as `0x${string}`,
-    abi: ERC20_ABI,
-    functionName: "allowance",
-    args: [fromAddress as `0x${string}`, ENSO_ROUTER_ADDRESS],
-  })) as bigint;
-
-  // if allowance is less than amountIn, return false
-  if (BigInt(amountIn) > allowance) {
-    return {
-      allowance: false,
-    };
-  } else {
-    return {
-      allowance: true,
-    };
-  }
-}
-
-// Allowance for swap function
-export async function allowance(
+// Allowance for send function
+export async function allowanceForSend(
   tokenIn: string,
   amount: string,
   fromAddress: string,
@@ -73,7 +41,7 @@ export async function allowance(
     };
   }
 
-  const tokenInDecimals = await checkTokenDecimals(tokenInAddress, CHAIN_ID);
+  const tokenInDecimals = await checkTokenDecimals(tokenInAddress);
   const amountIn = parseUnits(amount, tokenInDecimals).toString();
   // get token allowance
   const allowance = (await publicClient.readContract({
@@ -95,6 +63,15 @@ export async function allowance(
   }
 }
 
+// Allowance for swap function
+export async function allowanceForSwap(
+  tokenIn: string,
+  amount: string,
+  fromAddress: string
+) {
+  return allowanceForSend(tokenIn, amount, fromAddress, ENSO_ROUTER_ADDRESS);
+}
+
 // Approve function
 export async function approve(
   tokenIn: string,
@@ -107,7 +84,7 @@ export async function approve(
     throw new Error("Native token cannot be approved");
   }
 
-  const tokenInDecimals = await checkTokenDecimals(tokenInAddress, CHAIN_ID);
+  const tokenInDecimals = await checkTokenDecimals(tokenInAddress);
   const amountIn = parseUnits(amount, tokenInDecimals);
   const approveData = encodeFunctionData({
     abi: ERC20_ABI,
@@ -129,30 +106,7 @@ export async function approve(
 
 // Approve for swap function
 export async function approveForSwap(tokenIn: string, amount: string) {
-  let tokenInAddress = TOKENS[CHAIN_ID as number][tokenIn];
-  const tokenInDecimals = await checkTokenDecimals(tokenInAddress, CHAIN_ID);
-  const amountIn = parseUnits(amount, tokenInDecimals);
-  const spenderAddress = ENSO_ROUTER_ADDRESS;
-  // if tokenIn is the native token, send the transaction directly
-  if (tokenInAddress === NATIVE_TOKEN) {
-    throw new Error("Native token cannot be approved");
-  }
-
-  const approveData = encodeFunctionData({
-    abi: ERC20_ABI,
-    functionName: "approve",
-    args: [spenderAddress, amountIn],
-  });
-  return NextResponse.json({
-    chainId: "eip:155:" + CHAIN_ID,
-    method: "eth_sendTransaction",
-    params: {
-      abi: ERC20_ABI,
-      to: tokenInAddress,
-      data: approveData,
-      value: "0",
-    },
-  });
+  return approve(tokenIn, amount, ENSO_ROUTER_ADDRESS);
 }
 
 // Transfer function
@@ -162,13 +116,14 @@ export async function transfer(
   receiverAddress: string
 ) {
   let tokenInAddress = TOKENS[CHAIN_ID as number][tokenIn];
-  const tokenInDecimals = await checkTokenDecimals(tokenInAddress, CHAIN_ID);
+  const tokenInDecimals = await checkTokenDecimals(tokenInAddress);
   const amountIn = parseUnits(amount, tokenInDecimals);
   const transferData = encodeFunctionData({
     abi: ERC20_ABI,
     functionName: "transfer",
     args: [receiverAddress as `0x${string}`, amountIn],
   });
+
   return NextResponse.json({
     chainId: "eip:155:" + CHAIN_ID,
     method: "eth_sendTransaction",
@@ -188,81 +143,84 @@ export async function mint1155(
   fromAddress: string,
   amount?: string
 ) {
-    let merkleMintStrategy;
-    let valueAmount;
-    // check if the collection follow the fixed price strategy 
-    const fixedPriceStrategy = await publicClient.readContract({
-      address: FIXED_PRICE_SALE_STRATEGY,
-      abi: ZORA_FIXED_PRICE_STRATEGY_ABI,
+  let merkleMintStrategy;
+  let valueAmount;
+  // check if the collection follow the fixed price strategy
+  const fixedPriceStrategy = await publicClient.readContract({
+    address: FIXED_PRICE_SALE_STRATEGY,
+    abi: ZORA_FIXED_PRICE_STRATEGY_ABI,
+    functionName: "sale",
+    args: [collectionAddress as `0x${string}`, BigInt(tokenId)],
+  });
+  // check if the collection is following the fixed price strategy
+  const isFixedPriceStrategy = fixedPriceStrategy.pricePerToken !== BigInt(0);
+  // if the collection is not following the fixed price strategy, check if it is following the markle mint strategy
+  if (!isFixedPriceStrategy) {
+    merkleMintStrategy = await publicClient.readContract({
+      address: MERKLE_MINT_SALE_STRATEGY,
+      abi: ZORA_MERKLE_MINT_STRATEGY_ABI,
       functionName: "sale",
       args: [collectionAddress as `0x${string}`, BigInt(tokenId)],
     });
-    // check if the collection is following the fixed price strategy
-    const isFixedPriceStrategy = fixedPriceStrategy.pricePerToken !== BigInt(0);
-    // if the collection is not following the fixed price strategy, check if it is following the markle mint strategy
-    if (!isFixedPriceStrategy) {
-      merkleMintStrategy = await publicClient.readContract({
-        address: MERKLE_MINT_SALE_STRATEGY,
-        abi: ZORA_MERKLE_MINT_STRATEGY_ABI,
-        functionName: "sale",
-        args: [collectionAddress as `0x${string}`, BigInt(tokenId)],
-      });
-    }
-    // check if the collection is following the markle mint strategy
-    const isMerkleMintStrategy = merkleMintStrategy?.merkleRoot !== NATIVE_TOKEN;
+  }
+  // check if the collection is following the markle mint strategy
+  const isMerkleMintStrategy = merkleMintStrategy?.merkleRoot !== NATIVE_TOKEN;
 
-    // if the collection is not following the markle mint strategy, throw an error
-    if (!isFixedPriceStrategy && !isMerkleMintStrategy) {
-      throw new Error("Zora Collection is not following a supported mint strategy");
-    }
-    // get mint referral address
-    const mintReferralAddress = fixedPriceStrategy.fundsRecipient;
-    // token amount to mint
-    const mintAmount = amount ? parseUnits(amount, 18) : parseUnits("1", 18);
-    // if the collection is following the fixed price strategy, mint the token
-    if (isFixedPriceStrategy) {
-        // calculate the owner fee amount
-        const fee = await publicClient.readContract({
-            address: collectionAddress as `0x${string}`,
-            abi: ERC1155_CONTRACT_ABI,
-            functionName: "mintFee",
-        });
-        // calculate the token price
-        const tokenPrice = fixedPriceStrategy.pricePerToken;
-        // calculate the value amount
-        valueAmount = (fee + tokenPrice) * mintAmount;
-        // build minter arguments
-        const minterArgs = ethers.utils.defaultAbiCoder.encode(
-            ["address"],
-            [fromAddress as `0x${string}`]
-          ) as `0x${string}`;
+  // if the collection is not following the markle mint strategy, throw an error
+  if (!isFixedPriceStrategy && !isMerkleMintStrategy) {
+    throw new Error(
+      "Zora Collection is not following a supported mint strategy"
+    );
+  }
 
-        const mintData = encodeFunctionData({
-            abi: ERC1155_CONTRACT_ABI,
-            functionName: "mintWithRewards",
-            args: [
-                FIXED_PRICE_SALE_STRATEGY, 
-                BigInt(tokenId),
-                mintAmount,
-                minterArgs,
-                mintReferralAddress,
-            ],
-        });
+  // get mint referral address
+  const mintReferralAddress = fixedPriceStrategy.fundsRecipient;
+  // token amount to mint
+  const mintAmount = amount ? parseUnits(amount, 18) : parseUnits("1", 18);
+  // if the collection is following the fixed price strategy, mint the token
+  if (isFixedPriceStrategy) {
+    // calculate the owner fee amount
+    const fee = await publicClient.readContract({
+      address: collectionAddress as `0x${string}`,
+      abi: ERC1155_CONTRACT_ABI,
+      functionName: "mintFee",
+    });
+    // calculate the token price
+    const tokenPrice = fixedPriceStrategy.pricePerToken;
+    // calculate the value amount
+    valueAmount = (fee + tokenPrice) * mintAmount;
+    // build minter arguments
+    const minterArgs = utils.defaultAbiCoder.encode(
+      ["address"],
+      [fromAddress as `0x${string}`]
+    ) as `0x${string}`;
 
-      return NextResponse.json({
-        chainId: "eip:155:" + CHAIN_ID,
-        method: "eth_sendTransaction",
-        params: {
-          abi: ERC1155_CONTRACT_ABI,
-          to: collectionAddress,
-          data: mintData,
-          value: valueAmount,
-        },
-      });
-    }
+    const mintData = encodeFunctionData({
+      abi: ERC1155_CONTRACT_ABI,
+      functionName: "mintWithRewards",
+      args: [
+        FIXED_PRICE_SALE_STRATEGY,
+        BigInt(tokenId),
+        mintAmount,
+        minterArgs,
+        mintReferralAddress,
+      ],
+    });
 
-    // if the collection is following the markle mint strategy, mint the token
-    if (isMerkleMintStrategy) {
-        throw new Error("Merkle mint strategy not supported yet");
-    }
+    return NextResponse.json({
+      chainId: "eip:155:" + CHAIN_ID,
+      method: "eth_sendTransaction",
+      params: {
+        abi: ERC1155_CONTRACT_ABI,
+        to: collectionAddress,
+        data: mintData,
+        value: valueAmount,
+      },
+    });
+  }
+
+  // if the collection is following the markle mint strategy, mint the token
+  if (isMerkleMintStrategy) {
+    throw new Error("Merkle mint strategy not supported yet");
+  }
 }
