@@ -20,7 +20,7 @@ export const POST = frames(async (ctx) => {
     // };
   }
 
-  const userAddress = ctx.message?.requesterVerifiedAddresses[0];
+  const userAddress = ctx.message?.requesterVerifiedAddresses[1];
 
   // user not connected
   if (!userAddress) {
@@ -415,8 +415,8 @@ export const POST = frames(async (ctx) => {
             <Button
               action="tx"
               key="1"
-              target={`/send-complete?transaction_type=send&receiver_address=${receiverAddress}&token=${token}&amount=${amount}`}
-              post_url={`/transaction-result?transaction_type=send&receiver_address=${receiverAddress}&token=${token}&amount=${amount}`}
+              target={`/send-complete?transaction_type=send&receiver=${receiverAddress}&token=${token}&amount=${amount}`}
+              post_url={`/transaction-result?transaction_type=send&receiver=${receiverAddress}&token=${token}&amount=${amount}`}
             >
               Complete send
             </Button>,

@@ -131,11 +131,6 @@ export async function transfer(
   const tokenInDecimals = await checkTokenDecimals(tokenInAddress);
   const amountIn = parseUnits(amount, tokenInDecimals);
 
-  const balance = await getTokenBalance(receiverAddress, tokenIn);
-  if (balance < amountIn) {
-    throw new Error("Insufficient balance");
-  }
-
   const transferData = encodeFunctionData({
     abi: ERC20_ABI,
     functionName: "transfer",
@@ -147,9 +142,9 @@ export async function transfer(
     method: "eth_sendTransaction",
     params: {
       abi: ERC20_ABI,
-      to: tokenInAddress,
+      to: receiverAddress,
       data: tokenInAddress === NATIVE_TOKEN ? "" : transferData,
-      value: tokenInAddress === NATIVE_TOKEN ? amountIn : "0",
+      value: tokenInAddress === NATIVE_TOKEN ? amountIn.toString() : "0",
     },
   };
 }
@@ -166,7 +161,7 @@ export async function mint1155(
   }
 
   let merkleMintStrategy;
-  let valueAmount;
+  let valueAmount: bigint;
   // check if the collection follow the fixed price strategy
   const fixedPriceStrategy = await publicClient.readContract({
     address: FIXED_PRICE_SALE_STRATEGY,
@@ -236,7 +231,7 @@ export async function mint1155(
         abi: ERC1155_CONTRACT_ABI,
         to: collectionAddress,
         data: mintData,
-        value: valueAmount,
+        value: valueAmount.toString(),
       },
     };
   }

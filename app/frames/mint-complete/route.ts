@@ -10,7 +10,6 @@ export async function POST(req: NextRequest) {
 
   try {
     const txCalldata = await mint1155(collection, tokenId, user_address);
-    console.log("Transaction mint calldata", txCalldata);
     return NextResponse.json(txCalldata);
   } catch (e) {
     console.log(e);

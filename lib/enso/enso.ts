@@ -1,4 +1,3 @@
-import { NextResponse } from "next/server";
 import { parseUnits } from "viem";
 import { ENSO_ROUTER_ABI } from "@/lib/abis";
 import { TOKENS } from "@/lib/tokens";
@@ -17,6 +16,10 @@ export async function swap(
   amount: string,
   fromAddress: string
 ) {
+  if (!tokenIn || !tokenOut || !amount || !fromAddress) {
+    throw new Error("Invalid swap parameters");
+  }
+
   let tokenInAddress = TOKENS[CHAIN_ID as number][tokenIn];
   const tokenOutAddress = TOKENS[CHAIN_ID as number][tokenOut];
   const fee = process.env.FEE || 0;
@@ -55,10 +58,10 @@ export async function swap(
       },
     });
     const data = (await response.json()) as ApiResponse;
-    console.log(data, "data");
+    console.log("enso data", data);
 
-    return NextResponse.json({
-      chainId: "eip155:" + CHAIN_ID,
+    return {
+      chainId: "eip155:".concat(CHAIN_ID.toString()),
       method: "eth_sendTransaction",
       params: {
         abi: ENSO_ROUTER_ABI,
@@ -66,7 +69,7 @@ export async function swap(
         data: data.tx.data,
         value: data.tx.value,
       },
-    });
+    };
   } catch (error) {
     console.log(error);
     throw new Error("Enso: route request failed");

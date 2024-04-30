@@ -13,7 +13,6 @@ export const POST = frames(async (ctx) => {
     //   ],
     // };
   }
-  console.log("Frame Transaction Result ctx:", ctx);
 
   return {
     image: (
