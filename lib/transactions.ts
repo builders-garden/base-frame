@@ -197,6 +197,7 @@ export async function mint1155(
       functionName: "sale",
       args: [collectionAddress as `0x${string}`, BigInt(tokenId)],
     });
+    // check if the collection is following the fixed price strategy
     const isFixedPriceStrategy = fixedPriceStrategy.pricePerToken !== BigInt(0);
     // if the collection is not following the fixed price strategy, check if it is following the markle mint strategy
     if (!isFixedPriceStrategy) {
@@ -207,6 +208,7 @@ export async function mint1155(
         args: [collectionAddress as `0x${string}`, BigInt(tokenId)],
       });
     }
+    // check if the collection is following the markle mint strategy
     const isMerkleMintStrategy = merkleMintStrategy?.merkleRoot !== NATIVE_TOKEN;
 
     // if the collection is not following the markle mint strategy, throw an error
