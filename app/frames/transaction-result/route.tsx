@@ -115,7 +115,7 @@ export const POST = frames(async (ctx) => {
           See tx on Basescan
         </Button>,
         <Button action="post" key="2" target="/">
-          Learn More
+          Home
         </Button>,
       ],
     };
@@ -156,7 +156,7 @@ export const POST = frames(async (ctx) => {
           See tx on Basescan
         </Button>,
         <Button action="post" key="2" target="/">
-          Learn More
+          Home
         </Button>,
       ],
     };
@@ -196,7 +196,7 @@ export const POST = frames(async (ctx) => {
           See tx on Basescan
         </Button>,
         <Button action="post" key="2" target="/">
-          Learn More
+          Home
         </Button>,
       ],
     };
@@ -237,7 +237,7 @@ export const POST = frames(async (ctx) => {
         See tx on Basescan
       </Button>,
       <Button action="post" key="2" target="/">
-        Learn More
+        Home
       </Button>,
     ],
   };

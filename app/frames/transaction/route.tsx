@@ -206,6 +206,49 @@ export const POST = frames(async (ctx) => {
 
     // tokenFrom and tokenTo and amount are all valid
     if (isValidTokenFrom && isValidTokenTo && isValidAmount) {
+      const userBalance = await getTokenBalance(userAddress, tokenFrom);
+      const tokenInDecimals = await checkTokenDecimals(
+        TOKENS[CHAIN_ID][tokenFrom]
+      );
+      const bigIntAmount: bigint = parseUnits(amount, tokenInDecimals);
+      const formattedBalance: string = formatUnits(
+        userBalance,
+        tokenInDecimals
+      );
+
+      if (userBalance < bigIntAmount) {
+        return {
+          image: (
+            <div tw="flex flex-col text-center items-center align-middle">
+              <p tw="text-6xl text-balance">Swap</p>
+              <p tw="text-3xl text-balance">
+                You have {formattedBalance} {tokenFrom} but you need at least{" "}
+                {amount} {tokenFrom}
+              </p>
+              <p tw="text-3xl text-balance">
+                Replenish your Base account and refresh
+              </p>
+            </div>
+          ),
+          buttons: [
+            <Button
+              key="1"
+              action="link"
+              target={`https://basescan.org/address/${userAddress}`}
+            >
+              See account on Basescan
+            </Button>,
+            <Button
+              key="2"
+              action="post"
+              target={`/transaction?transaction_type=swap&token_from=${tokenFrom}&token_to=${tokenTo}&amount=${amount}`}
+            >
+              Refresh balance
+            </Button>,
+          ],
+        };
+      }
+
       const { allowance } = await allowanceForSwap(
         tokenFrom,
         amount,
@@ -230,6 +273,13 @@ export const POST = frames(async (ctx) => {
               post_url={`/transaction?transaction_type=swap&token_from=${tokenFrom}&token_to=${tokenTo}&amount=${amount}`}
             >
               Approve swap
+            </Button>,
+            <Button
+              key="2"
+              action="post"
+              target={`/transaction?transaction_type=swap&token_from=${tokenFrom}&token_to=${tokenTo}&amount=${amount}`}
+            >
+              Refresh approval
             </Button>,
           ],
         };
@@ -389,7 +439,7 @@ export const POST = frames(async (ctx) => {
         return {
           image: (
             <div tw="flex flex-col text-center items-center align-middle justify-around">
-              <p tw="text-6xl text-balance">Approve Send</p>
+              <p tw="text-6xl text-balance">Transfer Token</p>
               <p tw="text-3xl mx-auto text-balance">
                 You have {formattedBalance} {token} but you need at least{" "}
                 {amount} {token}
@@ -505,10 +555,50 @@ export const POST = frames(async (ctx) => {
       const nftMetadata = await getNftData(collectionAddress, tokenId);
       console.log(nftMetadata);
 
-      const isFixedPriceNftStrategy = await isFixedPriceMintStrategy(
+      const nftType = await isFixedPriceMintStrategy(
         collectionAddress,
         tokenId
       );
+
+      const isFixedPriceNftStrategy = nftType?.isFixedPriceStrategy;
+
+      const ethBalance = await getTokenBalance(userAddress, "ETH");
+      const tokenInDecimals = await checkTokenDecimals(TOKENS[CHAIN_ID]["ETH"]);
+      const formattedBalance: string = formatUnits(ethBalance, tokenInDecimals);
+
+      if (!!nftType && ethBalance < nftType.nftPrice) {
+        const formattedNftPrice: string = formatUnits(nftType.nftPrice, 18);
+        return {
+          image: (
+            <div tw="flex flex-col text-center items-center align-middle">
+              <p tw="text-6xl text-balance">Mint</p>
+              <p tw="text-3xl text-balance">
+                You have {formattedBalance} ETH but you need at least{" "}
+                {formattedNftPrice} ETH
+              </p>
+              <p tw="text-3xl text-balance">
+                Replenish your Base account and refresh
+              </p>
+            </div>
+          ),
+          buttons: [
+            <Button
+              key="1"
+              action="link"
+              target={`https://basescan.org/address/${userAddress}`}
+            >
+              See account on Basescan
+            </Button>,
+            <Button
+              key="2"
+              action="post"
+              target={`/transaction?transaction_type=mint&collection=${collectionAddress}&token_id=${tokenId}`}
+            >
+              Refresh balance
+            </Button>,
+          ],
+        };
+      }
 
       if (!isFixedPriceNftStrategy) {
         return {
@@ -518,13 +608,6 @@ export const POST = frames(async (ctx) => {
               <p tw="text-3xl text-balance">
                 This Zora collection has a not supported minting strategy.
               </p>
-              {nftMetadata.image ? (
-                <img
-                  src={nftMetadata.image}
-                  alt={nftMetadata.description}
-                  width={"250px"}
-                />
-              ) : null}
             </div>
           ),
           buttons: [
@@ -546,13 +629,6 @@ export const POST = frames(async (ctx) => {
                 You are minting {nftMetadata.name ? nftMetadata.name : null}{" "}
                 token {tokenId} from collection {collectionAddress}
               </p>
-              {nftMetadata.image ? (
-                <img
-                  src={nftMetadata.image}
-                  alt={nftMetadata.description}
-                  width={"250px"}
-                />
-              ) : null}
             </div>
           ),
           buttons: [

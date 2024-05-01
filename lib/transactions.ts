@@ -150,7 +150,8 @@ export async function transfer(
 
 export async function isFixedPriceMintStrategy(
   collectionAddress: string,
-  tokenId: string
+  tokenId: string,
+  amount?: string
 ) {
   let merkleMintStrategy;
   const fixedPriceStrategy = await publicClient.readContract({
@@ -162,7 +163,18 @@ export async function isFixedPriceMintStrategy(
   // check if the collection is following the fixed price strategy
   const isFixedPriceStrategy = fixedPriceStrategy.pricePerToken !== BigInt(0);
   if (isFixedPriceStrategy) {
-    return true;
+    // calculate the owner fee amount
+    const fee = await publicClient.readContract({
+      address: collectionAddress as `0x${string}`,
+      abi: ERC1155_CONTRACT_ABI,
+      functionName: "mintFee",
+    });
+    // calculate the token price
+    const tokenPrice = fixedPriceStrategy.pricePerToken;
+    // calculate the value amount
+    const mintAmount = amount ? BigInt(amount) : BigInt("1");
+    const valueAmount = (fee + tokenPrice) * mintAmount;
+    return { isFixedPriceStrategy: true, nftPrice: valueAmount };
   }
 
   // if the collection is not following the fixed price strategy, check if it is following the markle mint strategy
@@ -177,7 +189,7 @@ export async function isFixedPriceMintStrategy(
   const isMerkleMintStrategy = merkleMintStrategy?.merkleRoot !== NATIVE_TOKEN;
   if (isMerkleMintStrategy) {
     console.error("Merkle mint strategy not supported yet");
-    return false;
+    return { isFixedPriceStrategy: false, nftPrice: BigInt(0) };
   }
   // if the collection is not following the markle mint strategy, throw an error
   if (!isFixedPriceStrategy && !isMerkleMintStrategy) {
@@ -228,10 +240,8 @@ export async function mint1155(
     );
   }
 
-  // get mint referral address
-  const mintReferralAddress = fixedPriceStrategy.fundsRecipient;
   // token amount to mint
-  const mintAmount = amount ? parseUnits(amount, 18) : parseUnits("1", 18);
+  const mintAmount = amount ? BigInt(amount) : BigInt("1");
   // if the collection is following the fixed price strategy, mint the token
   if (isFixedPriceStrategy) {
     // calculate the owner fee amount
@@ -248,7 +258,7 @@ export async function mint1155(
     const minterArgs = utils.defaultAbiCoder.encode(
       ["address"],
       [fromAddress as `0x${string}`]
-    ) as `0x${string}`;
+    ) as string;
 
     const mintData = encodeFunctionData({
       abi: ERC1155_CONTRACT_ABI,
@@ -257,8 +267,10 @@ export async function mint1155(
         FIXED_PRICE_SALE_STRATEGY,
         BigInt(tokenId),
         mintAmount,
-        minterArgs,
-        mintReferralAddress,
+        minterArgs as `0x${string}`,
+        process.env.ZORA_REFERRAL_ADDRESS
+          ? (process.env.ZORA_REFERRAL_ADDRESS as `0x${string}`)
+          : NATIVE_TOKEN,
       ],
     });
 
@@ -267,7 +279,7 @@ export async function mint1155(
       method: "eth_sendTransaction",
       params: {
         abi: ERC1155_CONTRACT_ABI,
-        to: collectionAddress,
+        to: collectionAddress as `0x${string}`,
         data: mintData,
         value: valueAmount.toString(),
       },
