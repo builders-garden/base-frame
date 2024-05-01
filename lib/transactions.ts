@@ -133,7 +133,7 @@ export async function transfer(
   const transferData = encodeFunctionData({
     abi: ERC20_ABI,
     functionName: "transfer",
-    args: [receiverAddress as `0x${string}`, amountIn],
+    args: [receiverAddress as `0x${string}`, BigInt(amountIn)],
   });
 
   return {
@@ -146,6 +146,45 @@ export async function transfer(
       value: tokenInAddress === NATIVE_TOKEN ? amountIn.toString() : "0",
     },
   };
+}
+
+export async function isFixedPriceMintStrategy(
+  collectionAddress: string,
+  tokenId: string
+) {
+  let merkleMintStrategy;
+  const fixedPriceStrategy = await publicClient.readContract({
+    address: FIXED_PRICE_SALE_STRATEGY,
+    abi: ZORA_FIXED_PRICE_STRATEGY_ABI,
+    functionName: "sale",
+    args: [collectionAddress as `0x${string}`, BigInt(tokenId)],
+  });
+  // check if the collection is following the fixed price strategy
+  const isFixedPriceStrategy = fixedPriceStrategy.pricePerToken !== BigInt(0);
+  if (isFixedPriceStrategy) {
+    return true;
+  }
+
+  // if the collection is not following the fixed price strategy, check if it is following the markle mint strategy
+  merkleMintStrategy = await publicClient.readContract({
+    address: MERKLE_MINT_SALE_STRATEGY,
+    abi: ZORA_MERKLE_MINT_STRATEGY_ABI,
+    functionName: "sale",
+    args: [collectionAddress as `0x${string}`, BigInt(tokenId)],
+  });
+
+  // check if the collection is following the markle mint strategy
+  const isMerkleMintStrategy = merkleMintStrategy?.merkleRoot !== NATIVE_TOKEN;
+  if (isMerkleMintStrategy) {
+    console.error("Merkle mint strategy not supported yet");
+    return false;
+  }
+  // if the collection is not following the markle mint strategy, throw an error
+  if (!isFixedPriceStrategy && !isMerkleMintStrategy) {
+    throw new Error(
+      "Zora Collection is not following a supported mint strategy"
+    );
+  }
 }
 
 // ERC1155 Zora mint function
@@ -233,10 +272,5 @@ export async function mint1155(
         value: valueAmount.toString(),
       },
     };
-  }
-
-  // if the collection is following the markle mint strategy, mint the token
-  if (isMerkleMintStrategy) {
-    throw new Error("Merkle mint strategy not supported yet");
   }
 }

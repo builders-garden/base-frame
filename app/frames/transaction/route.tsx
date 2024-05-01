@@ -4,7 +4,11 @@ import { frames } from "@/app/frames/frames";
 import { TOKENS, isApprovedToken } from "@/lib/tokens";
 import { checkTokenDecimals, getTokenBalance } from "@/lib/utils";
 import { isAddress, formatUnits, parseUnits } from "viem";
-import { CHAIN_ID, allowanceForSwap } from "@/lib/transactions";
+import {
+  CHAIN_ID,
+  allowanceForSwap,
+  isFixedPriceMintStrategy,
+} from "@/lib/transactions";
 import { getNftData } from "@/lib/nft-mint";
 
 export const POST = frames(async (ctx) => {
@@ -20,7 +24,7 @@ export const POST = frames(async (ctx) => {
     // };
   }
 
-  const userAddress = ctx.message?.requesterVerifiedAddresses[1];
+  const userAddress = ctx.message?.requesterVerifiedAddresses[0];
 
   // user not connected
   if (!userAddress) {
@@ -499,35 +503,70 @@ export const POST = frames(async (ctx) => {
     // collection address and tokenId are valid
     if (isValidCollectionAddress && isValidTokenId) {
       const nftMetadata = await getNftData(collectionAddress, tokenId);
+      console.log(nftMetadata);
 
-      return {
-        image: (
-          <div tw="flex flex-col text-center items-center align-middle">
-            <p tw="text-6xl text-balance">Mint</p>
-            <p tw="text-3xl text-balance">
-              You are minting {nftMetadata.name ? nftMetadata.name : null} token{" "}
-              {tokenId} from collection {collectionAddress}
-            </p>
-            {nftMetadata.image ? (
-              <img
-                src={nftMetadata.image}
-                alt={nftMetadata.description}
-                width={"250px"}
-              />
-            ) : null}
-          </div>
-        ),
-        buttons: [
-          <Button
-            action="tx"
-            key="1"
-            target={`/mint-complete?transaction_type=mint&collection=${collectionAddress}&token_id=${tokenId}&user_address=${userAddress}`}
-            post_url={`/transaction-result?transaction_type=mint&collection=${collectionAddress}&token_id=${tokenId}`}
-          >
-            Confirm mint
-          </Button>,
-        ],
-      };
+      const isFixedPriceNftStrategy = await isFixedPriceMintStrategy(
+        collectionAddress,
+        tokenId
+      );
+
+      if (!isFixedPriceNftStrategy) {
+        return {
+          image: (
+            <div tw="flex flex-col text-center items-center align-middle">
+              <p tw="text-6xl text-balance">Mint</p>
+              <p tw="text-3xl text-balance">
+                This Zora collection has a not supported minting strategy.
+              </p>
+              {nftMetadata.image ? (
+                <img
+                  src={nftMetadata.image}
+                  alt={nftMetadata.description}
+                  width={"250px"}
+                />
+              ) : null}
+            </div>
+          ),
+          buttons: [
+            <Button
+              action="post"
+              key="1"
+              target="/transaction?transaction_type=mint"
+            >
+              Retry with another collection
+            </Button>,
+          ],
+        };
+      } else {
+        return {
+          image: (
+            <div tw="flex flex-col text-center items-center align-middle">
+              <p tw="text-6xl text-balance">Mint</p>
+              <p tw="text-3xl text-balance">
+                You are minting {nftMetadata.name ? nftMetadata.name : null}{" "}
+                token {tokenId} from collection {collectionAddress}
+              </p>
+              {nftMetadata.image ? (
+                <img
+                  src={nftMetadata.image}
+                  alt={nftMetadata.description}
+                  width={"250px"}
+                />
+              ) : null}
+            </div>
+          ),
+          buttons: [
+            <Button
+              action="tx"
+              key="1"
+              target={`/mint-complete?transaction_type=mint&collection=${collectionAddress}&token_id=${tokenId}&user_address=${userAddress}`}
+              post_url={`/transaction-result?transaction_type=mint&collection=${collectionAddress}&token_id=${tokenId}`}
+            >
+              Confirm mint
+            </Button>,
+          ],
+        };
+      }
     }
   }
 
