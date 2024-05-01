@@ -3,7 +3,7 @@ import { FrameDefinition, JsonValue } from "frames.js/types";
 import { frames } from "@/app/frames/frames";
 import { TOKENS, isApprovedToken } from "@/lib/tokens";
 import { checkTokenDecimals, getTokenBalance } from "@/lib/utils";
-import { isAddress, formatEther, parseEther } from "viem";
+import { isAddress, formatUnits, parseUnits } from "viem";
 import { CHAIN_ID, allowanceForSwap } from "@/lib/transactions";
 import { getNftData } from "@/lib/nft-mint";
 
@@ -20,7 +20,7 @@ export const POST = frames(async (ctx) => {
     // };
   }
 
-  const userAddress = ctx.message?.requesterVerifiedAddresses[0];
+  const userAddress = ctx.message?.requesterVerifiedAddresses[1];
 
   // user not connected
   if (!userAddress) {
@@ -165,9 +165,12 @@ export const POST = frames(async (ctx) => {
     if (isValidTokenFrom && isValidTokenTo && !isValidAmount) {
       // user connected, check balance
       const userBalance = await getTokenBalance(userAddress, tokenFrom);
-      const formattedBalance = formatEther(
-        userBalance as unknown as bigint,
-        "wei"
+      const tokenInDecimals = await checkTokenDecimals(
+        TOKENS[CHAIN_ID][tokenFrom]
+      );
+      const formattedBalance: string = formatUnits(
+        userBalance,
+        tokenInDecimals
       );
 
       return {
@@ -338,9 +341,10 @@ export const POST = frames(async (ctx) => {
     if (isValidReceiverAddress && isValidToken && !isValidAmount) {
       // user connected, check balance
       const userBalance = await getTokenBalance(userAddress, token);
-      const formattedBalance = formatEther(
-        userBalance as unknown as bigint,
-        "wei"
+      const tokenInDecimals = await checkTokenDecimals(TOKENS[CHAIN_ID][token]);
+      const formattedBalance: string = formatUnits(
+        userBalance,
+        tokenInDecimals
       );
       return {
         image: (
@@ -370,8 +374,12 @@ export const POST = frames(async (ctx) => {
     // receiverAddress, token and amount are valid
     if (isValidReceiverAddress && isValidToken && isValidAmount) {
       const userBalance = await getTokenBalance(userAddress, token);
-      const formattedBalance = formatEther(userBalance, "wei");
-      const bigIntAmount = parseEther(amount);
+      const tokenInDecimals = await checkTokenDecimals(TOKENS[CHAIN_ID][token]);
+      const bigIntAmount: bigint = parseUnits(amount, tokenInDecimals);
+      const formattedBalance: string = formatUnits(
+        userBalance,
+        tokenInDecimals
+      );
 
       if (userBalance < bigIntAmount) {
         return {

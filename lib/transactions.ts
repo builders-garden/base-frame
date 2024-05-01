@@ -8,7 +8,6 @@ import {
   MERKLE_MINT_SALE_STRATEGY,
   checkTokenDecimals,
   NATIVE_TOKEN,
-  getTokenBalance,
 } from "@/lib/utils";
 import {
   ERC1155_CONTRACT_ABI,
@@ -142,7 +141,7 @@ export async function transfer(
     method: "eth_sendTransaction",
     params: {
       abi: ERC20_ABI,
-      to: receiverAddress,
+      to: tokenInAddress === NATIVE_TOKEN ? receiverAddress : tokenInAddress,
       data: tokenInAddress === NATIVE_TOKEN ? "" : transferData,
       value: tokenInAddress === NATIVE_TOKEN ? amountIn.toString() : "0",
     },

@@ -61,9 +61,14 @@ export const POST = frames(async (ctx) => {
     };
   }
 
-  const transactionReceipt = await publicClient.getTransactionReceipt({
-    hash: transactionId as `0x${string}`,
-  });
+  let transactionReceipt: any = null;
+  try {
+    transactionReceipt = await publicClient.getTransactionReceipt({
+      hash: transactionId as `0x${string}`,
+    });
+  } catch (e) {
+    console.error(e);
+  }
 
   if (!transactionReceipt) {
     return {
@@ -72,7 +77,9 @@ export const POST = frames(async (ctx) => {
           <div tw="flex flex-col text-center items-center align-middle">
             <p tw="text-6xl text-balance">XMTP Base Frame</p>
             <p tw="text-4xl text-balance">Processing</p>
-            <p tw="text-2xl text-balance">Transaction is being broadcasted</p>
+            <p tw="text-2xl text-balance">
+              {transactionType} Transaction is being broadcasted
+            </p>
             <div tw="flex flex-row w-fit items-center text-center align-middle">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
