@@ -8,9 +8,7 @@ export async function generateMetadata(): Promise<Metadata> {
     title: "XMTP Base Frame",
     description: "This is a new transaction frame",
     other: {
-      ...(await fetchMetadata(
-        new URL("/frames", vercelURL() || "http://localhost:3000")
-      )),
+      ...(await fetchMetadata(new URL("/frames", vercelURL()))),
     },
   };
 }

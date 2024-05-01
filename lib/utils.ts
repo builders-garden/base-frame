@@ -24,8 +24,8 @@ export function currentURL(pathname: string): URL {
 }
 
 export function vercelURL(): string {
-  return process.env.VERCEL_URL
-    ? `https://xmtp-base-frame.builders.garden`
+  return process.env.NEXT_PUBLIC_HOST
+    ? process.env.NEXT_PUBLIC_HOST
     : "http://localhost:3000";
 }
 

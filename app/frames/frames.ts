@@ -3,10 +3,11 @@ import { farcasterHubContext, openframes } from "frames.js/middleware";
 import { imagesWorkerMiddleware } from "frames.js/middleware/images-worker";
 import { createFrames } from "frames.js/next";
 import { getXmtpFrameMessage, isXmtpFrameActionPayload } from "frames.js/xmtp";
+import { vercelURL } from "@/lib/utils";
 
 export const frames = createFrames({
   basePath: "/frames",
-  baseUrl: process.env.NEXT_PUBLIC_HOST || "http://localhost:3000",
+  baseUrl: vercelURL(),
   initialState: {
     pageIndex: 0,
   },
