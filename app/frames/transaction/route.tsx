@@ -24,7 +24,11 @@ export const POST = frames(async (ctx) => {
     // };
   }
 
-  const userAddress = ctx.message?.requesterVerifiedAddresses[0];
+  const userAddress =
+    ctx.message?.requesterVerifiedAddresses &&
+    ctx.message?.requesterVerifiedAddresses.length > 0
+      ? ctx.message?.requesterVerifiedAddresses[0]
+      : ctx.message?.verifiedWalletAddress;
 
   // user not connected
   if (!userAddress) {
@@ -553,7 +557,6 @@ export const POST = frames(async (ctx) => {
     // collection address and tokenId are valid
     if (isValidCollectionAddress && isValidTokenId) {
       const nftMetadata = await getNftData(collectionAddress, tokenId);
-      console.log(nftMetadata);
 
       const nftType = await isFixedPriceMintStrategy(
         collectionAddress,
@@ -565,40 +568,6 @@ export const POST = frames(async (ctx) => {
       const ethBalance = await getTokenBalance(userAddress, "ETH");
       const tokenInDecimals = await checkTokenDecimals(TOKENS[CHAIN_ID]["ETH"]);
       const formattedBalance: string = formatUnits(ethBalance, tokenInDecimals);
-
-      if (!!nftType && ethBalance < nftType.nftPrice) {
-        const formattedNftPrice: string = formatUnits(nftType.nftPrice, 18);
-        return {
-          image: (
-            <div tw="flex flex-col text-center items-center align-middle">
-              <p tw="text-6xl text-balance">Mint</p>
-              <p tw="text-3xl text-balance">
-                You have {formattedBalance} ETH but you need at least{" "}
-                {formattedNftPrice} ETH
-              </p>
-              <p tw="text-3xl text-balance">
-                Replenish your Base account and refresh
-              </p>
-            </div>
-          ),
-          buttons: [
-            <Button
-              key="1"
-              action="link"
-              target={`https://basescan.org/address/${userAddress}`}
-            >
-              See account on Basescan
-            </Button>,
-            <Button
-              key="2"
-              action="post"
-              target={`/transaction?transaction_type=mint&collection=${collectionAddress}&token_id=${tokenId}`}
-            >
-              Refresh balance
-            </Button>,
-          ],
-        };
-      }
 
       if (!isFixedPriceNftStrategy) {
         return {
@@ -621,6 +590,47 @@ export const POST = frames(async (ctx) => {
           ],
         };
       } else {
+        if (!!nftType && ethBalance < nftType.nftPrice) {
+          const formattedNftPrice: string = formatUnits(nftType.nftPrice, 18);
+          return {
+            image: (
+              <div tw="flex flex-col text-center items-center align-middle">
+                <p tw="text-6xl text-balance">Mint</p>
+                <p tw="text-3xl text-balance">
+                  You have {formattedBalance} ETH but you need at least{" "}
+                  {formattedNftPrice} ETH
+                </p>
+                <p tw="text-3xl text-balance">
+                  Replenish your Base account and refresh
+                </p>
+                {/* {nftMetadata.image ? (
+                <img
+                  src={nftMetadata.image}
+                  alt={nftMetadata.description}
+                  width={"250px"}
+                />
+              ) : null} */}
+              </div>
+            ),
+            buttons: [
+              <Button
+                key="1"
+                action="link"
+                target={`https://basescan.org/address/${userAddress}`}
+              >
+                See account on Basescan
+              </Button>,
+              <Button
+                key="2"
+                action="post"
+                target={`/transaction?transaction_type=mint&collection=${collectionAddress}&token_id=${tokenId}`}
+              >
+                Refresh balance
+              </Button>,
+            ],
+          };
+        }
+
         return {
           image: (
             <div tw="flex flex-col text-center items-center align-middle">
@@ -629,6 +639,13 @@ export const POST = frames(async (ctx) => {
                 You are minting {nftMetadata.name ? nftMetadata.name : null}{" "}
                 token {tokenId} from collection {collectionAddress}
               </p>
+              {/* {nftMetadata.image ? (
+                <img
+                  src={nftMetadata.image}
+                  alt={nftMetadata.description}
+                  width={"250px"}
+                />
+              ) : null} */}
             </div>
           ),
           buttons: [
