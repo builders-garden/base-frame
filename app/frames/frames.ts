@@ -3,7 +3,7 @@ import { farcasterHubContext, openframes } from "frames.js/middleware";
 import { imagesWorkerMiddleware } from "frames.js/middleware/images-worker";
 import { createFrames } from "frames.js/next";
 import { getXmtpFrameMessage, isXmtpFrameActionPayload } from "frames.js/xmtp";
-import { vercelURL } from "@/lib/utils";
+import { vercelURL, DEFAULT_DEBUGGER_HUB_URL } from "@/lib/utils";
 
 export const frames = createFrames({
   basePath: "/frames",
@@ -15,7 +15,9 @@ export const frames = createFrames({
     imagesWorkerMiddleware({
       imagesRoute: "/images",
     }),
-    farcasterHubContext(),
+    farcasterHubContext({
+      hubHttpUrl: DEFAULT_DEBUGGER_HUB_URL,
+    }),
     openframes({
       clientProtocol: {
         id: "xmtp",
@@ -25,6 +27,7 @@ export const frames = createFrames({
         isValidPayload: (body: JSON) => isXmtpFrameActionPayload(body),
         getFrameMessage: async (body: JSON) => {
           if (!isXmtpFrameActionPayload(body)) {
+            console.error("Invalid xmtp payload");
             return undefined;
           }
           const result = await getXmtpFrameMessage(body);
