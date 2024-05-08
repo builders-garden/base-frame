@@ -36,7 +36,7 @@ export const POST = frames(async (ctx) => {
       image: (
         <div tw="flex flex-col">
           <div tw="flex flex-col text-center items-center align-middle">
-            <p tw="text-6xl text-balance">XMTP Base Frame</p>
+            <p tw="text-6xl text-balance">Base Frame</p>
             <p tw="text-3xl text-balance">
               You need to connect your wallet to swap tokens
             </p>
@@ -61,7 +61,7 @@ export const POST = frames(async (ctx) => {
       image: (
         <div tw="flex flex-col">
           <div tw="flex flex-col text-center items-center align-middle">
-            <p tw="text-6xl text-balance">XMTP Base Frame</p>
+            <p tw="text-6xl text-balance">Base Frame</p>
             <p tw="text-3xl text-balance">What can you do with this frame?</p>
           </div>
         </div>
@@ -126,7 +126,7 @@ export const POST = frames(async (ctx) => {
         image: (
           <div tw="flex flex-col">
             <div tw="flex flex-col text-center items-center align-middle">
-              <p tw="text-6xl text-balance">XMTP Base Frame</p>
+              <p tw="text-6xl text-balance">Base Frame</p>
               <p tw="text-3xl text-balance">
                 Select the token that you want to swap
               </p>
@@ -155,7 +155,7 @@ export const POST = frames(async (ctx) => {
         image: (
           <div tw="flex flex-col">
             <div tw="flex flex-col text-center items-center align-middle">
-              <p tw="text-6xl text-balance">XMTP Base Frame</p>
+              <p tw="text-6xl text-balance">Base Frame</p>
               <p tw="text-3xl text-balance">
                 You are swapping {tokenFrom} for ...
               </p>
@@ -185,7 +185,7 @@ export const POST = frames(async (ctx) => {
         image: (
           <div tw="flex flex-col">
             <div tw="flex flex-col text-center items-center align-middle">
-              <p tw="text-6xl text-balance">XMTP Base Frame</p>
+              <p tw="text-6xl text-balance">Base Frame</p>
               <p tw="text-3xl text-balance">
                 Select the amount of {tokenFrom} that you want to swap
               </p>
@@ -350,7 +350,7 @@ export const POST = frames(async (ctx) => {
         image: (
           <div tw="flex flex-col">
             <div tw="flex flex-col text-center items-center align-middle">
-              <p tw="text-6xl text-balance">XMTP Base Frame</p>
+              <p tw="text-6xl text-balance">Base Frame</p>
               <p tw="text-3xl text-balance">Enter the receiver address</p>
             </div>
           </div>
@@ -386,7 +386,7 @@ export const POST = frames(async (ctx) => {
         image: (
           <div tw="flex flex-col">
             <div tw="flex flex-col text-center items-center align-middle">
-              <p tw="text-6xl text-balance">XMTP Base Frame</p>
+              <p tw="text-6xl text-balance">Base Frame</p>
               <p tw="text-3xl text-balance">Select the token to send</p>
             </div>
           </div>
@@ -408,7 +408,7 @@ export const POST = frames(async (ctx) => {
         image: (
           <div tw="flex flex-col">
             <div tw="flex flex-col text-center items-center align-middle">
-              <p tw="text-6xl text-balance">XMTP Base Frame</p>
+              <p tw="text-6xl text-balance">Base Frame</p>
               <p tw="text-3xl text-balance">Enter the amount to send</p>
               <p tw="text-3xl text-balance">
                 You have {formattedBalance} {token}
@@ -512,7 +512,7 @@ export const POST = frames(async (ctx) => {
         image: (
           <div tw="flex flex-col">
             <div tw="flex flex-col text-center items-center align-middle">
-              <p tw="text-6xl text-balance">XMTP Base Frame</p>
+              <p tw="text-6xl text-balance">Base Frame</p>
               <p tw="text-3xl text-balance">Enter the collection address</p>
             </div>
           </div>
@@ -536,7 +536,7 @@ export const POST = frames(async (ctx) => {
         image: (
           <div tw="flex flex-col">
             <div tw="flex flex-col text-center items-center align-middle">
-              <p tw="text-6xl text-balance">XMTP Base Frame</p>
+              <p tw="text-6xl text-balance">Base Frame</p>
               <p tw="text-3xl text-balance">Enter the token id</p>
             </div>
           </div>
@@ -667,7 +667,7 @@ export const POST = frames(async (ctx) => {
     image: (
       <div tw="flex flex-col">
         <div tw="flex flex-col text-center items-center align-middle">
-          <p tw="text-6xl text-balance">XMTP Base Frame</p>
+          <p tw="text-6xl text-balance">Base Frame</p>
           <p tw="text-3xl text-balance">What can you do with this frame?</p>
         </div>
       </div>

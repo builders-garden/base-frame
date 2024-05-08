@@ -27,7 +27,7 @@ export const POST = frames(async (ctx) => {
       image: (
         <div tw="flex flex-col">
           <div tw="flex flex-col text-center items-center align-middle">
-            <p tw="text-6xl text-balance">XMTP Base Frame</p>
+            <p tw="text-6xl text-balance">Base Frame</p>
             <p tw="text-3xl text-balance">What can you do with this frame?</p>
           </div>
         </div>
@@ -75,7 +75,7 @@ export const POST = frames(async (ctx) => {
       image: (
         <div tw="flex flex-col">
           <div tw="flex flex-col text-center items-center align-middle">
-            <p tw="text-6xl text-balance">XMTP Base Frame</p>
+            <p tw="text-6xl text-balance">Base Frame</p>
             <p tw="text-4xl text-balance">Processing</p>
             <p tw="text-2xl text-balance">
               {transactionType} Transaction is being broadcasted
@@ -126,7 +126,7 @@ export const POST = frames(async (ctx) => {
       image: (
         <div tw="flex flex-col">
           <div tw="flex flex-col text-center items-center align-middle">
-            <p tw="text-6xl text-balance">XMTP Base Frame</p>
+            <p tw="text-6xl text-balance">Base Frame</p>
             <p tw="text-4xl text-balance">{transactionType} Succeeded</p>
             <div tw="flex flex-row w-fit items-center text-center align-middle">
               <svg
@@ -165,7 +165,7 @@ export const POST = frames(async (ctx) => {
       image: (
         <div tw="flex flex-col">
           <div tw="flex flex-col text-center items-center align-middle">
-            <p tw="text-6xl text-balance">XMTP Base Frame</p>
+            <p tw="text-6xl text-balance">Base Frame</p>
             <p tw="text-4xl text-balance">{transactionType} Failed</p>
             <div tw="flex flex-row w-fit items-center text-center align-middle">
               <svg
@@ -206,7 +206,7 @@ export const POST = frames(async (ctx) => {
     image: (
       <div tw="flex flex-col">
         <div tw="flex flex-col text-center items-center align-middle">
-          <p tw="text-6xl text-balance">XMTP Base Frame</p>
+          <p tw="text-6xl text-balance">Base Frame</p>
           <p tw="text-4xl text-balance">{transactionType}</p>
           <div tw="flex flex-row w-fit items-center text-center align-middle">
             <svg

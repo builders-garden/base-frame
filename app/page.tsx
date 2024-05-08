@@ -5,7 +5,7 @@ import { fetchMetadata } from "frames.js/next";
 
 export async function generateMetadata(): Promise<Metadata> {
   return {
-    title: "XMTP Base Frame",
+    title: "Base Frame",
     description: "This is a new transaction frame",
     other: {
       ...(await fetchMetadata(new URL("/frames", vercelURL()))),
@@ -18,7 +18,7 @@ export default async function Home() {
 
   return (
     <div className="flex flex-col gap-2">
-      <h1 className="text-4xl">XMTP Base Frame</h1>
+      <h1 className="text-4xl">Base Frame</h1>
       <Link href={createDebugUrl(url)} className="underline">
         Debug
       </Link>

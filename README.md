@@ -1,6 +1,6 @@
-# XMTP Base Frame
+# Base Frame
 
-This is a Farcaster and XMTP Frame starter made with [Next.js](https://nextjs.org/) following the [frames.js OpenFrames](https://framesjs.org/middleware/openframes) standard, working on Base mainnet.
+This is a frame following the [frames.js OpenFrames](https://framesjs.org/middleware/openframes) standard, working on Base mainnet.
 
 ## Getting Started
 
@@ -29,6 +29,7 @@ The files `app/frames/mint-complete/route.ts`, `app/frames/send-complete/route.t
 After a transaction is made, the user is redirected to the `app/frames/transaction-result/route.tsx` frame, which shows the status (if the transactionReceipt is available).
 
 Under the hood, this project uses the following libraries:
+
 - [Enso Finance](https://enso.finance) for the swap transaction
 - [Zora ZDK](https://docs.zora.co/docs/zora-api/zdk) to retrieve the NFT metadata for the mint transaction
 - [Viem](https://viem.sh) for everything else
