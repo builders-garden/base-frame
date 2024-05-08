@@ -13,7 +13,7 @@ const handleRequest = frames(async (ctx) => {
     image: (
       <div tw="flex flex-col">
         <div tw="flex flex-col text-center items-center align-middle">
-          <p tw="text-6xl text-balance">Base Frame</p>
+          <p tw="text-6xl text-balance">XMTP Base Frame</p>
           <p tw="text-3xl text-balance">What can you do with this frame?</p>
         </div>
       </div>
