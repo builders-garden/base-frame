@@ -3,10 +3,14 @@ import { farcasterHubContext, openframes } from "frames.js/middleware";
 import { imagesWorkerMiddleware } from "frames.js/middleware/images-worker";
 import { createFrames } from "frames.js/next";
 import { getXmtpFrameMessage, isXmtpFrameActionPayload } from "frames.js/xmtp";
-import { vercelURL, DEFAULT_DEBUGGER_HUB_URL } from "@/lib/utils";
+import {
+  vercelURL,
+  DEFAULT_DEBUGGER_HUB_URL,
+  FRAMES_BASE_PATH,
+} from "@/lib/utils";
 
 export const frames = createFrames({
-  basePath: "/frames",
+  basePath: FRAMES_BASE_PATH,
   baseUrl: vercelURL(),
   initialState: {
     pageIndex: 0,

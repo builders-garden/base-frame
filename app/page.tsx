@@ -1,14 +1,19 @@
 import Link from "next/link";
-import { vercelURL, createDebugUrl, currentURL } from "@/lib/utils";
+import {
+  vercelURL,
+  createDebugUrl,
+  FRAMES_BASE_PATH,
+  currentURL,
+} from "@/lib/utils";
 import type { Metadata } from "next";
 import { fetchMetadata } from "frames.js/next";
 
 export async function generateMetadata(): Promise<Metadata> {
   return {
     title: "XMTP Base Frame",
-    description: "This is a new transaction frame",
+    description: "This is a frame to swap, send and mint on zora",
     other: {
-      ...(await fetchMetadata(new URL("/frames", vercelURL()))),
+      ...(await fetchMetadata(new URL(FRAMES_BASE_PATH, vercelURL()))),
     },
   };
 }

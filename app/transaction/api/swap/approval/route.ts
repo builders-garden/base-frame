@@ -1,18 +1,17 @@
 import { NextRequest, NextResponse } from "next/server";
-import { transfer } from "@/lib/transactions";
+import { approveForSwap } from "@/lib/transactions";
 
 export async function POST(req: NextRequest) {
   const url = new URL(req.url);
   const { searchParams } = url;
-  const token = searchParams.get("token") || "";
+  const tokenFrom = searchParams.get("token_from") || "";
   const amount = searchParams.get("amount") || "";
-  const receiverAddress = searchParams.get("receiver") || "";
 
   try {
-    const txCalldata = await transfer(token, amount, receiverAddress);
+    const txCalldata = await approveForSwap(tokenFrom, amount);
     return NextResponse.json(txCalldata);
   } catch (e) {
-    console.log("ERROR", e);
+    console.log("swap approval error", e);
     return NextResponse.error();
   }
 }

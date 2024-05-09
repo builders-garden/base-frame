@@ -20,13 +20,11 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 
 Click on Debug to open the frames.js debugger, sign in with farcaster or with wallet to try XMTP openframes.
 
-You can start editing the frame by modifying `app/frames/route.tsx`.
+You can start editing the frame by modifying `app/transaction/route.tsx`.
 
-The flow logic is in the `app/frames/transaction/route.tsx` file.
+The files in the `/app/api` folder `/app/api/mint/route.ts`, `app/api/send/route.ts`, `app/api/swap/complete/route.ts` e `app/api/swap/approval/route.ts` handle the logic for the completion of the mint, send, swap and swap approval transactions.
 
-The files `app/frames/mint-complete/route.ts`, `app/frames/send-complete/route.ts`, `app/frames/swap-complete/route.ts` e `app/frames/swap-approval/route.ts` handles the logic for the completion of the mint, send, swap and swap approval transactions.
-
-After a transaction is made, the user is redirected to the `app/frames/transaction-result/route.tsx` frame, which shows the status (if the transactionReceipt is available).
+After a transaction is made, the user is redirected to the frame `app/transaction/transaction-result/route.tsx`, which shows the status (if the transactionReceipt is available).
 
 Under the hood, this project uses the following libraries:
 - [Enso Finance](https://enso.finance) for the swap transaction

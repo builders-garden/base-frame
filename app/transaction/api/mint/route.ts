@@ -12,7 +12,7 @@ export async function POST(req: NextRequest) {
     const txCalldata = await mint1155(collection, tokenId, user_address);
     return NextResponse.json(txCalldata);
   } catch (e) {
-    console.log(e);
+    console.log("mint error", e);
     return NextResponse.error();
   }
 }

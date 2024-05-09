@@ -41,6 +41,8 @@ export function createDebugUrl(frameURL: string | URL): string {
   }
 }
 
+export const FRAMES_BASE_PATH = "/transaction";
+
 export async function checkTokenDecimals(
   tokenAddress: string
 ): Promise<number> {

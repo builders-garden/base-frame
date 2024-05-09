@@ -1,18 +1,10 @@
 import { Button } from "frames.js/next";
-import { frames } from "@/app/frames/frames";
+import { frames } from "@/app/transaction/frames";
 import { publicClient } from "@/lib/transactions";
 
-export const POST = frames(async (ctx) => {
+const handler = frames(async (ctx) => {
   if (!ctx?.message?.isValid) {
     console.log("Invalid Frame");
-    // return {
-    //   image: <div>Invalid Frame</div>,
-    //   buttons: [
-    //     <Button action="post" key="1" target="/who-am-i">
-    //       Retry
-    //     </Button>,
-    //   ],
-    // };
   }
 
   const transactionType = ctx.url.searchParams.get("transaction_type");
@@ -35,14 +27,14 @@ export const POST = frames(async (ctx) => {
       buttons: [
         <Button
           action="post"
-          key="2"
+          key="1"
           target="/transaction?transaction_type=swap"
         >
           Swap
         </Button>,
         <Button
           action="post"
-          key="1"
+          key="2"
           target="/transaction?transaction_type=send"
         >
           Send
@@ -242,3 +234,6 @@ export const POST = frames(async (ctx) => {
     ],
   };
 });
+
+export const POST = handler;
+//export const GET = handler;

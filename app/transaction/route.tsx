@@ -1,6 +1,6 @@
 import { Button } from "frames.js/next";
 import { FrameDefinition, JsonValue } from "frames.js/types";
-import { frames } from "@/app/frames/frames";
+import { frames } from "@/app/transaction/frames";
 import { TOKENS, isApprovedToken } from "@/lib/tokens";
 import { checkTokenDecimals, getTokenBalance } from "@/lib/utils";
 import { isAddress, formatUnits, parseUnits } from "viem";
@@ -11,17 +11,9 @@ import {
 } from "@/lib/transactions";
 import { getNftData } from "@/lib/nft-mint";
 
-export const POST = frames(async (ctx) => {
+const handler = frames(async (ctx) => {
   if (!ctx?.message?.isValid) {
     console.log("Invalid Frame");
-    // return {
-    //   image: <div>Invalid Frame</div>,
-    //   buttons: [
-    //     <Button action="post" key="1" target="/who-am-i">
-    //       Retry
-    //     </Button>,
-    //   ],
-    // };
   }
 
   const userAddress =
@@ -37,15 +29,22 @@ export const POST = frames(async (ctx) => {
         <div tw="flex flex-col">
           <div tw="flex flex-col text-center items-center align-middle">
             <p tw="text-6xl text-balance">XMTP Base Frame</p>
-            <p tw="text-3xl text-balance">
-              You need to connect your wallet to swap tokens
-            </p>
+            <p tw="text-3xl text-balance">What can you do with this frame?</p>
           </div>
         </div>
       ),
       buttons: [
-        <Button action="post" key="1" target="/frames">
-          Home
+        <Button action="post" key="1" target="/?transaction_type=swap">
+          Swap
+        </Button>,
+        <Button action="post" key="2" target="/?transaction_type=send">
+          Send
+        </Button>,
+        <Button action="post" key="3" target="/?transaction_type=mint">
+          Mint
+        </Button>,
+        <Button action="post" key="4" target="/info">
+          Learn More
         </Button>,
       ],
     };
@@ -67,25 +66,13 @@ export const POST = frames(async (ctx) => {
         </div>
       ),
       buttons: [
-        <Button
-          action="post"
-          key="2"
-          target="/transaction?transaction_type=swap"
-        >
+        <Button action="post" key="1" target="/?transaction_type=swap">
           Swap
         </Button>,
-        <Button
-          action="post"
-          key="1"
-          target="/transaction?transaction_type=send"
-        >
+        <Button action="post" key="2" target="/?transaction_type=send">
           Send
         </Button>,
-        <Button
-          action="post"
-          key="3"
-          target="/transaction?transaction_type=mint"
-        >
+        <Button action="post" key="3" target="/?transaction_type=mint">
           Mint
         </Button>,
         <Button action="post" key="4" target="/info">
@@ -115,7 +102,7 @@ export const POST = frames(async (ctx) => {
           <Button
             action="post"
             key={`${index + 1}`}
-            target={`/transaction?transaction_type=swap&token_from=${token}`}
+            target={`/?transaction_type=swap&token_from=${token}`}
           >
             {token}
           </Button>
@@ -145,7 +132,7 @@ export const POST = frames(async (ctx) => {
           <Button
             action="post"
             key={`${index + 1}`}
-            target={`/transaction?transaction_type=swap&token_from=${tokenFrom}&token_to=${token}`}
+            target={`/?transaction_type=swap&token_from=${tokenFrom}&token_to=${token}`}
           >
             {token}
           </Button>
@@ -189,6 +176,7 @@ export const POST = frames(async (ctx) => {
               <p tw="text-3xl text-balance">
                 Select the amount of {tokenFrom} that you want to swap
               </p>
+              <p tw="text-3xl text-balance">You are {userAddress}</p>
               <p tw="text-3xl text-balance">
                 You have {formattedBalance} {tokenFrom}
               </p>
@@ -200,7 +188,7 @@ export const POST = frames(async (ctx) => {
           <Button
             action="post"
             key="1"
-            target={`/transaction?transaction_type=swap&token_from=${tokenFrom}&token_to=${tokenTo}&amount=${amount}`}
+            target={`/?transaction_type=swap&token_from=${tokenFrom}&token_to=${tokenTo}&amount=${amount}`}
           >
             Next
           </Button>,
@@ -225,6 +213,7 @@ export const POST = frames(async (ctx) => {
           image: (
             <div tw="flex flex-col text-center items-center align-middle">
               <p tw="text-6xl text-balance">Swap</p>
+              <p tw="text-3xl text-balance">You are {userAddress}</p>
               <p tw="text-3xl text-balance">
                 You have {formattedBalance} {tokenFrom} but you need at least{" "}
                 {amount} {tokenFrom}
@@ -245,7 +234,7 @@ export const POST = frames(async (ctx) => {
             <Button
               key="2"
               action="post"
-              target={`/transaction?transaction_type=swap&token_from=${tokenFrom}&token_to=${tokenTo}&amount=${amount}`}
+              target={`/?transaction_type=swap&token_from=${tokenFrom}&token_to=${tokenTo}&amount=${amount}`}
             >
               Refresh balance
             </Button>,
@@ -273,15 +262,15 @@ export const POST = frames(async (ctx) => {
             <Button
               action="tx"
               key="1"
-              target={`/swap-approval?transaction_type=swap&token_from=${tokenFrom}&token_to=${tokenTo}&amount=${amount}`}
-              post_url={`/transaction?transaction_type=swap&token_from=${tokenFrom}&token_to=${tokenTo}&amount=${amount}`}
+              target={`/api/swap/approval?token_from=${tokenFrom}&token_to=${tokenTo}&amount=${amount}`}
+              post_url={`/?transaction_type=swap&token_from=${tokenFrom}&token_to=${tokenTo}&amount=${amount}`}
             >
               Approve swap
             </Button>,
             <Button
               key="2"
               action="post"
-              target={`/transaction?transaction_type=swap&token_from=${tokenFrom}&token_to=${tokenTo}&amount=${amount}`}
+              target={`/?transaction_type=swap&token_from=${tokenFrom}&token_to=${tokenTo}&amount=${amount}`}
             >
               Refresh approval
             </Button>,
@@ -301,7 +290,7 @@ export const POST = frames(async (ctx) => {
             <Button
               action="tx"
               key="1"
-              target={`/swap-complete?transaction_type=swap&token_from=${tokenFrom}&token_to=${tokenTo}&amount=${amount}&user_address=${userAddress}`}
+              target={`/api/swap/complete?token_from=${tokenFrom}&token_to=${tokenTo}&amount=${amount}&user_address=${userAddress}`}
               post_url={`/transaction-result?transaction_type=swap&token_from=${tokenFrom}&token_to=${tokenTo}&amount=${amount}&user_address=${userAddress}`}
             >
               Complete swap
@@ -357,11 +346,7 @@ export const POST = frames(async (ctx) => {
         ),
         textInput: "receiver address 0x...",
         buttons: [
-          <Button
-            action="post"
-            key="1"
-            target={`/transaction?transaction_type=send`}
-          >
+          <Button action="post" key="1" target={`/?transaction_type=send`}>
             Next
           </Button>,
         ],
@@ -375,7 +360,7 @@ export const POST = frames(async (ctx) => {
           <Button
             action="post"
             key={`${index + 1}`}
-            target={`/transaction?transaction_type=send&receiver=${receiverAddress}&token=${token}`}
+            target={`/?transaction_type=send&receiver=${receiverAddress}&token=${token}`}
           >
             {token}
           </Button>
@@ -410,6 +395,7 @@ export const POST = frames(async (ctx) => {
             <div tw="flex flex-col text-center items-center align-middle">
               <p tw="text-6xl text-balance">XMTP Base Frame</p>
               <p tw="text-3xl text-balance">Enter the amount to send</p>
+              <p tw="text-3xl text-balance">You are {userAddress}</p>
               <p tw="text-3xl text-balance">
                 You have {formattedBalance} {token}
               </p>
@@ -421,7 +407,7 @@ export const POST = frames(async (ctx) => {
           <Button
             action="post"
             key="1"
-            target={`/transaction?transaction_type=send&receiver=${receiverAddress}&token=${token}`}
+            target={`/?transaction_type=send&receiver=${receiverAddress}&token=${token}`}
           >
             Next
           </Button>,
@@ -444,7 +430,8 @@ export const POST = frames(async (ctx) => {
           image: (
             <div tw="flex flex-col text-center items-center align-middle justify-around">
               <p tw="text-6xl text-balance">Transfer Token</p>
-              <p tw="text-3xl mx-auto text-balance">
+              <p tw="text-3xl mx-auto text-balance">You are {userAddress}</p>
+              <p tw="text-3xl text-balance">
                 You have {formattedBalance} {token} but you need at least{" "}
                 {amount} {token}
               </p>
@@ -464,7 +451,7 @@ export const POST = frames(async (ctx) => {
             <Button
               key="2"
               action="post"
-              target={`/transaction?transaction_type=send&receiver=${receiverAddress}&token=${token}&amount=${amount}`}
+              target={`/?transaction_type=send&receiver=${receiverAddress}&token=${token}&amount=${amount}`}
             >
               Refresh balance
             </Button>,
@@ -484,7 +471,7 @@ export const POST = frames(async (ctx) => {
             <Button
               action="tx"
               key="1"
-              target={`/send-complete?transaction_type=send&receiver=${receiverAddress}&token=${token}&amount=${amount}`}
+              target={`/api/send/?receiver=${receiverAddress}&token=${token}&amount=${amount}`}
               post_url={`/transaction-result?transaction_type=send&receiver=${receiverAddress}&token=${token}&amount=${amount}`}
             >
               Complete send
@@ -519,11 +506,7 @@ export const POST = frames(async (ctx) => {
         ),
         textInput: "collection address 0x...",
         buttons: [
-          <Button
-            action="post"
-            key="1"
-            target={`/transaction?transaction_type=mint`}
-          >
+          <Button action="post" key="1" target={`/?transaction_type=mint`}>
             Next
           </Button>,
         ],
@@ -546,7 +529,7 @@ export const POST = frames(async (ctx) => {
           <Button
             action="post"
             key="1"
-            target={`/transaction?transaction_type=mint&collection=${collectionAddress}`}
+            target={`/?transaction_type=mint&collection=${collectionAddress}`}
           >
             Next
           </Button>,
@@ -580,11 +563,7 @@ export const POST = frames(async (ctx) => {
             </div>
           ),
           buttons: [
-            <Button
-              action="post"
-              key="1"
-              target="/transaction?transaction_type=mint"
-            >
+            <Button action="post" key="1" target="/?transaction_type=mint">
               Retry with another collection
             </Button>,
           ],
@@ -596,6 +575,7 @@ export const POST = frames(async (ctx) => {
             image: (
               <div tw="flex flex-col text-center items-center align-middle">
                 <p tw="text-6xl text-balance">Mint</p>
+                <p tw="text-3xl text-balance">You are {userAddress}</p>
                 <p tw="text-3xl text-balance">
                   You have {formattedBalance} ETH but you need at least{" "}
                   {formattedNftPrice} ETH
@@ -623,7 +603,7 @@ export const POST = frames(async (ctx) => {
               <Button
                 key="2"
                 action="post"
-                target={`/transaction?transaction_type=mint&collection=${collectionAddress}&token_id=${tokenId}`}
+                target={`/?transaction_type=mint&collection=${collectionAddress}&token_id=${tokenId}`}
               >
                 Refresh balance
               </Button>,
@@ -652,7 +632,7 @@ export const POST = frames(async (ctx) => {
             <Button
               action="tx"
               key="1"
-              target={`/mint-complete?transaction_type=mint&collection=${collectionAddress}&token_id=${tokenId}&user_address=${userAddress}`}
+              target={`/api/mint?collection=${collectionAddress}&token_id=${tokenId}&user_address=${userAddress}`}
               post_url={`/transaction-result?transaction_type=mint&collection=${collectionAddress}&token_id=${tokenId}`}
             >
               Confirm mint
@@ -673,13 +653,13 @@ export const POST = frames(async (ctx) => {
       </div>
     ),
     buttons: [
-      <Button action="post" key="2" target="/transaction?transaction_type=swap">
+      <Button action="post" key="1" target="/?transaction_type=swap">
         Swap
       </Button>,
-      <Button action="post" key="1" target="/transaction?transaction_type=send">
+      <Button action="post" key="2" target="/?transaction_type=send">
         Send
       </Button>,
-      <Button action="post" key="3" target="/transaction?transaction_type=mint">
+      <Button action="post" key="3" target="/?transaction_type=mint">
         Mint
       </Button>,
       <Button action="post" key="4" target="/info">
@@ -688,3 +668,6 @@ export const POST = frames(async (ctx) => {
     ],
   };
 });
+
+export const POST = handler;
+export const GET = handler;

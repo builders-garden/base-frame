@@ -13,7 +13,7 @@ export async function POST(req: NextRequest) {
     const txCalldata = await swap(tokenFrom, tokenTo, amount, userAddress);
     return NextResponse.json(txCalldata);
   } catch (e) {
-    console.log(e);
+    console.log("swap complete error", e);
     return NextResponse.error();
   }
 }
