@@ -10,7 +10,7 @@ import { fetchMetadata } from "frames.js/next";
 
 export async function generateMetadata(): Promise<Metadata> {
   return {
-    title: "XMTP Base Frame",
+    title: "Base Frame",
     description: "This is a frame to swap, send and mint on zora",
     other: {
       ...(await fetchMetadata(new URL(FRAMES_BASE_PATH, appURL()))),
@@ -23,7 +23,7 @@ export default async function Home() {
 
   return (
     <div className="flex flex-col gap-2">
-      <h1 className="text-4xl">XMTP Base Frame</h1>
+      <h1 className="text-4xl">Base Frame</h1>
       <Link href={createDebugUrl(url)} className="underline">
         Debug
       </Link>
