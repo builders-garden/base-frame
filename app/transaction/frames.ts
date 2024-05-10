@@ -12,9 +12,6 @@ import {
 export const frames = createFrames({
   basePath: FRAMES_BASE_PATH,
   baseUrl: appURL(),
-  initialState: {
-    pageIndex: 0,
-  },
   middleware: [
     imagesWorkerMiddleware({
       imagesRoute: "/images",
