@@ -1,6 +1,6 @@
 import Link from "next/link";
 import {
-  vercelURL,
+  appURL,
   createDebugUrl,
   FRAMES_BASE_PATH,
   currentURL,
@@ -13,7 +13,7 @@ export async function generateMetadata(): Promise<Metadata> {
     title: "XMTP Base Frame",
     description: "This is a frame to swap, send and mint on zora",
     other: {
-      ...(await fetchMetadata(new URL(FRAMES_BASE_PATH, vercelURL()))),
+      ...(await fetchMetadata(new URL(FRAMES_BASE_PATH, appURL()))),
     },
   };
 }

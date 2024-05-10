@@ -647,7 +647,7 @@
   resolved "https://registry.yarnpkg.com/@floating-ui/utils/-/utils-0.2.2.tgz#d8bae93ac8b815b2bd7a98078cf91e2724ef11e5"
   integrity sha512-J4yDIIthosAsRZ5CPYP/jQvUAQtlZTTD/4suA08/FEnlxqW3sKS9iAhgsa9VYLZ6vDHn/ixJgIqRQPotoBjxIw==
 
-"@frames.js/debugger@^0.2.6":
+"@frames.js/debugger@^0.2.7":
   version "0.2.7"
   resolved "https://registry.yarnpkg.com/@frames.js/debugger/-/debugger-0.2.7.tgz#9f4ee5af183af3ea597796096196dddd3c823ef5"
   integrity sha512-4NtWF0nRgBcCXwxtBP/Wn5aGVdhnoeMoQHa4jSCoPHxiskGjIkhKGBR8UtC3bUttX04OE/BYUFto+0JsZC6Tlw==
@@ -1227,7 +1227,7 @@
   resolved "https://registry.yarnpkg.com/@noble/hashes/-/hashes-1.3.3.tgz#39908da56a4adc270147bb07968bf3b16cfe1699"
   integrity sha512-V7/fPHgl+jsVPXqqeOzT8egNj2iBIVt+ECeMMG8TdcnTikP3oaBtUVqpT/gYCR68aEBJSF+XbYUxStjbFMqIIA==
 
-"@noble/hashes@1.4.0", "@noble/hashes@^1.3.1", "@noble/hashes@^1.4.0":
+"@noble/hashes@1.4.0", "@noble/hashes@^1.3.1", "@noble/hashes@^1.3.3":
   version "1.4.0"
   resolved "https://registry.yarnpkg.com/@noble/hashes/-/hashes-1.4.0.tgz#45814aa329f30e4fe0ba49426f49dfccdd066426"
   integrity sha512-V1JJ1WTRUqHHrOSh597hURcMqVKVGL/ea3kv0gSnEdsEZ0/+VyPghM1lMNGc00z7CIQorSvbKpuJkxvuHbvdbg==
@@ -2456,13 +2456,13 @@
   resolved "https://registry.yarnpkg.com/@webpack-cli/serve/-/serve-2.0.5.tgz#325db42395cd49fe6c14057f9a900e427df8810e"
   integrity sha512-lqaoKnRYBdo1UgDX8uF24AfGMifWK19TxPmM5FHc2vAGxrJ/qtyUyFBWoY1tISZdelsQ5fBcOusifo5o5wSJxQ==
 
-"@xmtp/frames-validator@^0.6.0":
-  version "0.6.0"
-  resolved "https://registry.yarnpkg.com/@xmtp/frames-validator/-/frames-validator-0.6.0.tgz#3b8bbb3074af9ecffb232ffb8a38616c765edb50"
-  integrity sha512-MOmtrhwcMlLLsoeygvI00kXEN4tRVipxw3culcljpske/tPqxYVxNDCBFLm393SpnoX9xbTLX82yHSEAuEyWPA==
+"@xmtp/frames-validator@^0.5.0":
+  version "0.5.2"
+  resolved "https://registry.yarnpkg.com/@xmtp/frames-validator/-/frames-validator-0.5.2.tgz#708389b829f4a9cbe61fbd728b6c0b2a7f2112c3"
+  integrity sha512-m62HoAs47Dz3MHpW1Ec9fdmnvK9GJYyPJl6mWifKblWmoA4s67zAuTF3V8qXv8hEUag6t1XBRF6BpfeKDva4HQ==
   dependencies:
     "@noble/curves" "^1.3.0"
-    "@noble/hashes" "^1.4.0"
+    "@noble/hashes" "^1.3.3"
     "@xmtp/proto" "3.45.0"
     viem "^2.7.14"
 
@@ -3073,6 +3073,11 @@ clsx@^1.2.1:
   version "1.2.1"
   resolved "https://registry.yarnpkg.com/clsx/-/clsx-1.2.1.tgz#0ddc4a20a549b59c93a4116bb26f5294ca17dc12"
   integrity sha512-EcR6r5a8bj6pu3ycsa/E/cKVGuTgZJZdsyUYHOksG/UHIiKfjxzRxYJpyVBwYaQeOvghal9fcc4PidlgzugAQg==
+
+clsx@^2.1.1:
+  version "2.1.1"
+  resolved "https://registry.yarnpkg.com/clsx/-/clsx-2.1.1.tgz#eed397c9fd8bd882bfb18deab7102049a2f32999"
+  integrity sha512-eYm0QWBtUrBWZWG0d386OGAw16Z995PiOVo2B7bjWSbHedGl5e0ZWaq65kOGgUSNesEIDkB9ISbTg/JK9dhCZA==
 
 color-convert@^1.9.0:
   version "1.9.3"
@@ -4256,10 +4261,10 @@ fraction.js@^4.3.7:
   resolved "https://registry.yarnpkg.com/fraction.js/-/fraction.js-4.3.7.tgz#06ca0085157e42fda7f9e726e79fefc4068840f7"
   integrity sha512-ZsDfxO51wGAXREY55a7la9LScWpwv9RxIrYABrlvOFBlH/ShPnrtsXeuUIfXKKOVicNxQ+o8JTbJvjS4M89yew==
 
-frames.js@^0.15.1:
-  version "0.15.1"
-  resolved "https://registry.yarnpkg.com/frames.js/-/frames.js-0.15.1.tgz#d6e33788e34490efc95e5faaee3c3d1f69a2677b"
-  integrity sha512-5DyeJbDjCqUEhCSv7E/eXni1oED2VAW7mKJZcrq416M1RNOSL4dWMzF9uG/sYf3OVhwNBhCmlSrJwA1rHOHFKQ==
+frames.js@^0.15.2:
+  version "0.15.2"
+  resolved "https://registry.yarnpkg.com/frames.js/-/frames.js-0.15.2.tgz#d8c2d8d9e1aa26fbdc80db6fb8f49a3f39ee46ff"
+  integrity sha512-nQ9Zc2tcJ1Khiz3MACKNL2KXLRyX+pw0p70vEGK//x0WoFKcI5FY+L5O2143ZfTPrmuXbNgbhAhVbWb0j+Jrpg==
   dependencies:
     "@vercel/og" "^0.6.2"
     cheerio "^1.0.0-rc.12"
@@ -6091,14 +6096,6 @@ randombytes@^2.1.0:
   dependencies:
     safe-buffer "^5.1.0"
 
-react-dom@^18:
-  version "18.2.0"
-  resolved "https://registry.yarnpkg.com/react-dom/-/react-dom-18.2.0.tgz#22aaf38708db2674ed9ada224ca4aa708d821e3d"
-  integrity sha512-6IMTriUmvsjHUjNtEDudZfuDQUoWXVxKHhlEGSk81n4YFS+r/Kl99wXiwlVXtPBtJenozv2P+hxDsw9eA7Xo6g==
-  dependencies:
-    loose-envify "^1.1.0"
-    scheduler "^0.23.0"
-
 react-dom@^18.2.0:
   version "18.3.1"
   resolved "https://registry.yarnpkg.com/react-dom/-/react-dom-18.3.1.tgz#c2265d79511b57d479b3dd3fdfa51536494c5cb4"
@@ -6127,13 +6124,6 @@ react-native-webview@^11.26.0:
   dependencies:
     escape-string-regexp "2.0.0"
     invariant "2.2.4"
-
-react@^18:
-  version "18.2.0"
-  resolved "https://registry.yarnpkg.com/react/-/react-18.2.0.tgz#555bd98592883255fa00de14f1151a917b5d77d5"
-  integrity sha512-/3IjMdb2L9QbBdWiW5e3P2/npwMBaU9mHCSCUzNln0ZCYbcfTsGbTJrU/kGemdH2IWmB2ioZ+zkxtmq6g09fGQ==
-  dependencies:
-    loose-envify "^1.1.0"
 
 react@^18.2.0:
   version "18.3.1"
@@ -6372,7 +6362,7 @@ satori@0.10.9:
     postcss-value-parser "^4.2.0"
     yoga-wasm-web "^0.3.3"
 
-scheduler@^0.23.0, scheduler@^0.23.2:
+scheduler@^0.23.2:
   version "0.23.2"
   resolved "https://registry.yarnpkg.com/scheduler/-/scheduler-0.23.2.tgz#414ba64a3b282892e944cf2108ecc078d115cdc3"
   integrity sha512-UOShsPwz7NrMUqhR6t0hWjFduvOzbtv7toDH1/hIrfRNIDBnnBWd0CwJTGvTpngVlmwGCdP9/Zl/tVrDqcuYzQ==

@@ -8,25 +8,28 @@
     "dev:monorepo": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint",
-    "update-framesjs": "yarn upgrade frames.js@latest"
+    "lint": "next lint"
   },
   "dependencies": {
-    "@xmtp/frames-validator": "^0.6.0",
+    "@xmtp/frames-validator": "^0.5.0",
     "@zoralabs/zdk": "^2.4.0",
+    "clsx": "^2.1.1",
     "ethers": "^5.7.2",
-    "frames.js": "^0.15.1",
+    "frames.js": "^0.15.2",
     "next": "14.2.2",
-    "react": "^18",
-    "react-dom": "^18",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
     "sharp": "^0.33.3",
     "strip-ansi": "^7.1.0",
     "tailwindcss-animate": "^1.0.7",
     "viem": "^2.9.25",
     "wagmi": "^2.5.20"
   },
+  "engines": {
+    "node": ">=18.17.0"
+  },
   "devDependencies": {
-    "@frames.js/debugger": "^0.2.6",
+    "@frames.js/debugger": "^0.2.7",
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",

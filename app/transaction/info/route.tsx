@@ -23,4 +23,3 @@ const handler = frames(async (ctx) => {
 });
 
 export const POST = handler;
-export const GET = handler;

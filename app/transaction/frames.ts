@@ -4,14 +4,14 @@ import { imagesWorkerMiddleware } from "frames.js/middleware/images-worker";
 import { createFrames } from "frames.js/next";
 import { getXmtpFrameMessage, isXmtpFrameActionPayload } from "frames.js/xmtp";
 import {
-  vercelURL,
+  appURL,
   DEFAULT_DEBUGGER_HUB_URL,
   FRAMES_BASE_PATH,
 } from "@/lib/utils";
 
 export const frames = createFrames({
   basePath: FRAMES_BASE_PATH,
-  baseUrl: vercelURL(),
+  baseUrl: appURL(),
   initialState: {
     pageIndex: 0,
   },
@@ -31,7 +31,6 @@ export const frames = createFrames({
         isValidPayload: (body: JSON) => isXmtpFrameActionPayload(body),
         getFrameMessage: async (body: JSON) => {
           if (!isXmtpFrameActionPayload(body)) {
-            console.error("Invalid xmtp payload");
             return undefined;
           }
           const result = await getXmtpFrameMessage(body);
