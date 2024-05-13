@@ -12,7 +12,8 @@ const handler = frames(async (ctx) => {
   const isValidTransactionType =
     !!transactionType && ["send", "swap", "mint"].includes(transactionType);
 
-  const transactionId = ctx.message?.transactionId;
+  const transactionId =
+    ctx.message?.transactionId || ctx.url.searchParams.get("tx");
 
   // transaction_type not valid
   if (!isValidTransactionType || !transactionId) {
@@ -107,7 +108,14 @@ const handler = frames(async (ctx) => {
         >
           See tx on Basescan
         </Button>,
-        <Button action="post" key="2" target="/">
+        <Button
+          key="2"
+          action="post"
+          target={`/transaction-result?transaction_type=${transactionType}&tx=${transactionId}`}
+        >
+          Refresh
+        </Button>,
+        <Button action="post" key="3" target="/">
           Home
         </Button>,
       ],
@@ -229,12 +237,19 @@ const handler = frames(async (ctx) => {
       >
         See tx on Basescan
       </Button>,
-      <Button action="post" key="2" target="/">
+      <Button
+        key="2"
+        action="post"
+        target={`/transaction-result?transaction_type=${transactionType}&tx=${transactionId}`}
+      >
+        Refresh
+      </Button>,
+      <Button action="post" key="3" target="/">
         Home
       </Button>,
     ],
   };
 });
 
+export const GET = handler;
 export const POST = handler;
-//export const GET = handler;

@@ -12,8 +12,6 @@ import {
 import { getNftData } from "@/lib/nft-mint";
 
 const handler = frames(async (ctx) => {
-  console.log("frame ctx", ctx.url.pathname, ctx.url.searchParams);
-
   const userAddress =
     ctx.message?.requesterVerifiedAddresses &&
     ctx.message?.requesterVerifiedAddresses.length > 0
@@ -31,8 +29,8 @@ const handler = frames(async (ctx) => {
     return {
       image: (
         <div tw="flex flex-col">
-          <div tw="flex flex-col text-center items-center align-middle">
-            <p tw="text-6xl text-balance">XMTP Base Frame</p>
+          <div tw="flex flex-col text-center items-center">
+            <p tw="text-6xl text-balance">Base Frame</p>
             <p tw="text-3xl text-balance">What can you do with this frame?</p>
           </div>
         </div>
@@ -85,8 +83,8 @@ const handler = frames(async (ctx) => {
       return {
         image: (
           <div tw="flex flex-col">
-            <div tw="flex flex-col text-center items-center align-middle">
-              <p tw="text-6xl text-balance">XMTP Base Frame</p>
+            <div tw="flex flex-col text-center items-center">
+              <p tw="text-6xl text-balance">Base Frame</p>
               <p tw="text-3xl text-balance">
                 Select the token that you want to swap
               </p>
@@ -114,8 +112,8 @@ const handler = frames(async (ctx) => {
       return {
         image: (
           <div tw="flex flex-col">
-            <div tw="flex flex-col text-center items-center align-middle">
-              <p tw="text-6xl text-balance">XMTP Base Frame</p>
+            <div tw="flex flex-col text-center items-center">
+              <p tw="text-6xl text-balance">Base Frame</p>
               <p tw="text-3xl text-balance">
                 You are swapping {tokenFrom} for ...
               </p>
@@ -130,43 +128,70 @@ const handler = frames(async (ctx) => {
     }
 
     // tokenFrom and tokenTo are valid
-    if (isValidTokenFrom && isValidTokenTo && !isValidAmount && userAddress) {
-      // user connected, check balance
-      const userBalance = await getTokenBalance(userAddress, tokenFrom);
-      const tokenInDecimals = await checkTokenDecimals(
-        TOKENS[CHAIN_ID][tokenFrom]
-      );
-      const formattedBalance: string = formatUnits(
-        userBalance,
-        tokenInDecimals
-      );
-
-      return {
-        image: (
-          <div tw="flex flex-col">
-            <div tw="flex flex-col text-center items-center align-middle">
-              <p tw="text-6xl text-balance">XMTP Base Frame</p>
-              <p tw="text-3xl text-balance">
-                Select the amount of {tokenFrom} that you want to swap
-              </p>
-              <p tw="text-3xl text-balance">You are {userAddress}</p>
-              <p tw="text-3xl text-balance">
-                You have {formattedBalance} {tokenFrom}
-              </p>
+    if (isValidTokenFrom && isValidTokenTo && !isValidAmount) {
+      if (!userAddress) {
+        return {
+          image: (
+            <div tw="flex flex-col">
+              <div tw="flex flex-col text-center items-center">
+                <p tw="text-6xl text-balance">Base Frame</p>
+                <p tw="text-3xl text-balance">
+                  Select the amount of {tokenFrom} that you want to swap for{" "}
+                  {tokenTo}
+                </p>
+              </div>
             </div>
-          </div>
-        ),
-        textInput: "amount 0.1",
-        buttons: [
-          <Button
-            action="post"
-            key="1"
-            target={`/new?transaction_type=swap&token_from=${tokenFrom}&token_to=${tokenTo}&amount=${amount}`}
-          >
-            Next
-          </Button>,
-        ],
-      };
+          ),
+          textInput: "amount 0.1",
+          buttons: [
+            <Button
+              action="post"
+              key="1"
+              target={`/new?transaction_type=swap&token_from=${tokenFrom}&token_to=${tokenTo}&amount=${amount}`}
+            >
+              Next
+            </Button>,
+          ],
+        };
+      } else {
+        // user connected, check balance
+        const userBalance = await getTokenBalance(userAddress, tokenFrom);
+        const tokenInDecimals = await checkTokenDecimals(
+          TOKENS[CHAIN_ID][tokenFrom]
+        );
+        const formattedBalance: string = formatUnits(
+          userBalance,
+          tokenInDecimals
+        );
+
+        return {
+          image: (
+            <div tw="flex flex-col">
+              <div tw="flex flex-col text-center items-center">
+                <p tw="text-6xl text-balance">Base Frame</p>
+                <p tw="text-3xl text-balance">
+                  Select the amount of {tokenFrom} that you want to swap for{" "}
+                  {tokenTo}
+                </p>
+                <p tw="text-3xl text-balance">
+                  You have {formattedBalance} {tokenFrom}
+                </p>
+                <p tw="text-3xl text-balance">You are {userAddress}</p>
+              </div>
+            </div>
+          ),
+          textInput: "amount 0.1",
+          buttons: [
+            <Button
+              action="post"
+              key="1"
+              target={`/new?transaction_type=swap&token_from=${tokenFrom}&token_to=${tokenTo}&amount=${amount}`}
+            >
+              Next
+            </Button>,
+          ],
+        };
+      }
     }
 
     // tokenFrom and tokenTo and amount are all valid
@@ -184,7 +209,7 @@ const handler = frames(async (ctx) => {
       if (userBalance < bigIntAmount) {
         return {
           image: (
-            <div tw="flex flex-col text-center items-center align-middle">
+            <div tw="flex flex-col text-center items-center">
               <p tw="text-6xl text-balance">Swap</p>
               <p tw="text-3xl text-balance">You are {userAddress}</p>
               <p tw="text-3xl text-balance">
@@ -224,7 +249,7 @@ const handler = frames(async (ctx) => {
       if (!allowance) {
         return {
           image: (
-            <div tw="flex flex-col text-center items-center align-middle">
+            <div tw="flex flex-col text-center items-center">
               <p tw="text-6xl text-balance">Approve Swap</p>
               <p tw="text-3xl text-balance">
                 You are swapping {amount} {tokenFrom} for {tokenTo}
@@ -252,7 +277,7 @@ const handler = frames(async (ctx) => {
       } else {
         return {
           image: (
-            <div tw="flex flex-col text-center items-center align-middle">
+            <div tw="flex flex-col text-center items-center">
               <p tw="text-6xl text-balance">Confirm Swap</p>
               <p tw="text-3xl text-balance">
                 You are swapping {amount} {tokenFrom} for {tokenTo}
@@ -275,7 +300,7 @@ const handler = frames(async (ctx) => {
 
     return {
       image: (
-        <div tw="flex flex-col text-center items-center align-middle">
+        <div tw="flex flex-col text-center items-center">
           <p tw="text-6xl text-balance">Swap</p>
           <p tw="text-3xl text-balance">
             You are swapping {amount} {tokenFrom} for {tokenTo}
@@ -313,8 +338,8 @@ const handler = frames(async (ctx) => {
       return {
         image: (
           <div tw="flex flex-col">
-            <div tw="flex flex-col text-center items-center align-middle">
-              <p tw="text-6xl text-balance">XMTP Base Frame</p>
+            <div tw="flex flex-col text-center items-center">
+              <p tw="text-6xl text-balance">Base Frame</p>
               <p tw="text-3xl text-balance">Enter the receiver address</p>
             </div>
           </div>
@@ -345,8 +370,8 @@ const handler = frames(async (ctx) => {
       return {
         image: (
           <div tw="flex flex-col">
-            <div tw="flex flex-col text-center items-center align-middle">
-              <p tw="text-6xl text-balance">XMTP Base Frame</p>
+            <div tw="flex flex-col text-center items-center">
+              <p tw="text-6xl text-balance">Base Frame</p>
               <p tw="text-3xl text-balance">Select the token to send</p>
             </div>
           </div>
@@ -356,43 +381,69 @@ const handler = frames(async (ctx) => {
     }
 
     // receiverAddress and token are valid
-    if (
-      isValidReceiverAddress &&
-      isValidToken &&
-      !isValidAmount &&
-      userAddress
-    ) {
-      // user connected, check balance
-      const userBalance = await getTokenBalance(userAddress, token);
-      const tokenInDecimals = await checkTokenDecimals(TOKENS[CHAIN_ID][token]);
-      const formattedBalance: string = formatUnits(
-        userBalance,
-        tokenInDecimals
-      );
-      return {
-        image: (
-          <div tw="flex flex-col">
-            <div tw="flex flex-col text-center items-center align-middle">
-              <p tw="text-6xl text-balance">XMTP Base Frame</p>
-              <p tw="text-3xl text-balance">Enter the amount to send</p>
-              <p tw="text-3xl text-balance">You are {userAddress}</p>
-              <p tw="text-3xl text-balance">
-                You have {formattedBalance} {token}
-              </p>
+    if (isValidReceiverAddress && isValidToken && !isValidAmount) {
+      if (!userAddress) {
+        return {
+          image: (
+            <div tw="flex flex-col">
+              <div tw="flex flex-col text-center items-center">
+                <p tw="text-6xl text-balance">Base Frame</p>
+                <p tw="text-3xl text-balance">
+                  Enter the amount of {token} you want to send to{" "}
+                  {receiverAddress}
+                </p>
+              </div>
             </div>
-          </div>
-        ),
-        textInput: "amount 0.1",
-        buttons: [
-          <Button
-            action="post"
-            key="1"
-            target={`/new?transaction_type=send&receiver=${receiverAddress}&token=${token}`}
-          >
-            Next
-          </Button>,
-        ],
-      };
+          ),
+          textInput: "amount 0.1",
+          buttons: [
+            <Button
+              action="post"
+              key="1"
+              target={`/new?transaction_type=send&receiver=${receiverAddress}&token=${token}`}
+            >
+              Next
+            </Button>,
+          ],
+        };
+      } else {
+        // user connected, check balance
+        const userBalance = await getTokenBalance(userAddress, token);
+        const tokenInDecimals = await checkTokenDecimals(
+          TOKENS[CHAIN_ID][token]
+        );
+        const formattedBalance: string = formatUnits(
+          userBalance,
+          tokenInDecimals
+        );
+        return {
+          image: (
+            <div tw="flex flex-col">
+              <div tw="flex flex-col text-center items-center">
+                <p tw="text-6xl text-balance">Base Frame</p>
+                <p tw="text-3xl text-balance">
+                  Enter the amount of {token} you want to send to{" "}
+                  {receiverAddress}
+                </p>
+                <p tw="text-3xl text-balance">You are {userAddress}</p>
+                <p tw="text-3xl text-balance">
+                  You have {formattedBalance} {token}
+                </p>
+              </div>
+            </div>
+          ),
+          textInput: "amount 0.1",
+          buttons: [
+            <Button
+              action="post"
+              key="1"
+              target={`/new?transaction_type=send&receiver=${receiverAddress}&token=${token}`}
+            >
+              Next
+            </Button>,
+          ],
+        };
+      }
     }
 
     // receiverAddress, token and amount are valid
@@ -413,7 +464,7 @@ const handler = frames(async (ctx) => {
       if (userBalance < bigIntAmount) {
         return {
           image: (
-            <div tw="flex flex-col text-center items-center align-middle justify-around">
+            <div tw="flex flex-col text-center items-center justify-around">
               <p tw="text-6xl text-balance">Transfer Token</p>
               <p tw="text-3xl mx-auto text-balance">You are {userAddress}</p>
               <p tw="text-3xl text-balance">
@@ -446,7 +497,7 @@ const handler = frames(async (ctx) => {
     }
     return {
       image: (
-        <div tw="flex flex-col gap-1 justify-around text-center items-center align-middle">
+        <div tw="flex flex-col gap-1 justify-around text-center items-center">
           <p tw="text-6xl text-balance">Confirm Send</p>
           <p tw="text-3xl w-[70vw] mx-auto text-balance">
             You are sending {amount} {token} to {receiverAddress}
@@ -482,8 +533,8 @@ const handler = frames(async (ctx) => {
       return {
         image: (
           <div tw="flex flex-col">
-            <div tw="flex flex-col text-center items-center align-middle">
-              <p tw="text-6xl text-balance">XMTP Base Frame</p>
+            <div tw="flex flex-col text-center items-center">
+              <p tw="text-6xl text-balance">Base Frame</p>
               <p tw="text-3xl text-balance">Enter the collection address</p>
             </div>
           </div>
@@ -502,8 +553,8 @@ const handler = frames(async (ctx) => {
       return {
         image: (
           <div tw="flex flex-col">
-            <div tw="flex flex-col text-center items-center align-middle">
-              <p tw="text-6xl text-balance">XMTP Base Frame</p>
+            <div tw="flex flex-col text-center items-center">
+              <p tw="text-6xl text-balance">Base Frame</p>
               <p tw="text-3xl text-balance">Enter the token id</p>
             </div>
           </div>
@@ -539,7 +590,7 @@ const handler = frames(async (ctx) => {
       if (!isFixedPriceNftStrategy) {
         return {
           image: (
-            <div tw="flex flex-col text-center items-center align-middle">
+            <div tw="flex flex-col text-center items-center">
               <p tw="text-6xl text-balance">Mint</p>
               <p tw="text-3xl text-balance">
                 This Zora collection has a not supported minting strategy.
@@ -557,7 +608,7 @@ const handler = frames(async (ctx) => {
           const formattedNftPrice: string = formatUnits(nftType.nftPrice, 18);
           return {
             image: (
-              <div tw="flex flex-col text-center items-center align-middle">
+              <div tw="flex flex-col text-center items-center">
                 <p tw="text-6xl text-balance">Mint</p>
                 <p tw="text-3xl text-balance">You are {userAddress}</p>
                 <p tw="text-3xl text-balance">
@@ -597,7 +648,7 @@ const handler = frames(async (ctx) => {
 
         return {
           image: (
-            <div tw="flex flex-col text-center items-center align-middle">
+            <div tw="flex flex-col text-center items-center">
               <p tw="text-6xl text-balance">Mint</p>
               <p tw="text-3xl text-balance">
                 You are minting {nftMetadata.name ? nftMetadata.name : null}{" "}
@@ -627,7 +678,7 @@ const handler = frames(async (ctx) => {
     }
     return {
       image: (
-        <div tw="flex flex-col text-center items-center align-middle">
+        <div tw="flex flex-col text-center items-center">
           <p tw="text-6xl text-balance">Mint</p>
           <p tw="text-3xl text-balance">
             You are minting token {tokenId} from collection {collectionAddress}
@@ -656,8 +707,8 @@ const handler = frames(async (ctx) => {
   return {
     image: (
       <div tw="flex flex-col">
-        <div tw="flex flex-col text-center items-center align-middle">
-          <p tw="text-6xl text-balance">XMTP Base Frame</p>
+        <div tw="flex flex-col text-center items-center">
+          <p tw="text-6xl text-balance">Base Frame</p>
           <p tw="text-3xl text-balance">What can you do with this frame?</p>
         </div>
       </div>
