@@ -1,4 +1,4 @@
-# Base Frame
+# Base Frame v1
 
 This is a frame following the [frames.js OpenFrames](https://framesjs.org/middleware/openframes) standard, working on Base mainnet.
 
