@@ -2,7 +2,7 @@ import { Button } from "frames.js/next";
 import { FrameDefinition, JsonValue } from "frames.js/types";
 import { frames } from "@/app/transaction/frames";
 import { TOKENS, isApprovedToken } from "@/lib/tokens";
-import { checkTokenDecimals, getTokenBalance } from "@/lib/utils";
+import { appURL, checkTokenDecimals, getTokenBalance } from "@/lib/utils";
 import { isAddress, formatUnits, parseUnits } from "viem";
 import {
   CHAIN_ID,
@@ -300,13 +300,28 @@ const handler = frames(async (ctx) => {
 
     return {
       image: (
-        <div tw="flex flex-col text-center items-center">
-          <p tw="text-6xl text-balance">Swap</p>
-          <p tw="text-3xl text-balance">
-            You are swapping {amount} {tokenFrom} for {tokenTo}
-          </p>
+        <div tw="relative flex flex-col text-center items-center justify-center">
+          <img
+            src={`${appURL()}/confirm-swap.png`}
+            alt="Background"
+            tw="w-full"
+          />
+          <div tw="w-full flex flex-row  text-center text-white absolute justify-between bottom-[165px] px-36">
+            <div tw="flex flex-row justify-center items-center">
+              <div tw=" w-[176px] text-center">{tokenFrom}</div>
+            </div>
+            <div tw="flex flex-row justify-center items-center">
+              <div tw=" w-[176px] text-center">{amount}</div>
+            </div>
+            <div tw="flex flex-row justify-center items-center">
+              <div tw=" w-[176px] text-center">{tokenTo}</div>
+            </div>
+          </div>
         </div>
       ),
+      imageOptions: {
+        aspectRatio: "1.91:1",
+      },
       buttons: [
         <Button
           action="post"
