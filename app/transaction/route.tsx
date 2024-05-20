@@ -28,11 +28,8 @@ const handler = frames(async (ctx) => {
   if (!isValidTransactionType) {
     return {
       image: (
-        <div tw="flex flex-col">
-          <div tw="flex flex-col text-center items-center">
-            <p tw="text-6xl text-balance">Base Frame</p>
-            <p tw="text-3xl text-balance">What can you do with this frame?</p>
-          </div>
+        <div tw="relative flex flex-col text-center items-center justify-center">
+          <img src={`${appURL()}/images/frames/landing.png`} tw="w-full" />
         </div>
       ),
       buttons: [
@@ -108,13 +105,6 @@ const handler = frames(async (ctx) => {
                   {tokenFrom}
                 </div>
               </div>
-              <div tw="flex absolute text-white bottom-[35px] left-0 pl-[380px] text-[24px]">
-                <div tw="flex w-[200px]">
-                  <p tw="mx-auto" style={{ fontFamily: "Urbanist-Bold" }}>
-                    {" "}
-                  </p>
-                </div>
-              </div>
             </div>
           ),
           textInput: "amount 0.1",
@@ -154,7 +144,7 @@ const handler = frames(async (ctx) => {
               <div tw="flex absolute text-white bottom-[35px] left-0 pl-[380px] text-[24px]">
                 <div tw="flex w-[200px]">
                   <p tw="mx-auto" style={{ fontFamily: "Urbanist-Bold" }}>
-                    {`${formattedBalance} ${tokenFrom}`.slice(0, 15)}
+                    {formattedBalance.slice(0, 8)} {tokenFrom}
                   </p>
                 </div>
               </div>
@@ -448,11 +438,11 @@ const handler = frames(async (ctx) => {
     if (!isValidReceiverAddress) {
       return {
         image: (
-          <div tw="flex flex-col">
-            <div tw="flex flex-col text-center items-center">
-              <p tw="text-6xl text-balance">Base Frame</p>
-              <p tw="text-3xl text-balance">Enter the receiver address</p>
-            </div>
+          <div tw="relative flex flex-col justify-center">
+            <img
+              src={`${appURL()}/images/frames/send/recipient.png`}
+              tw="w-full"
+            />
           </div>
         ),
         textInput: "receiver address 0x...",
@@ -483,10 +473,14 @@ const handler = frames(async (ctx) => {
 
       return {
         image: (
-          <div tw="flex flex-col">
-            <div tw="flex flex-col text-center items-center">
-              <p tw="text-6xl text-balance">Base Frame</p>
-              <p tw="text-3xl text-balance">Select the token to send</p>
+          <div tw="relative flex flex-col justify-center">
+            <img src={`${appURL()}/images/frames/send/token.png`} tw="w-full" />
+            <div tw="flex absolute text-white overflow-x-hidden bottom-[118px] left-0 pl-[110px] text-[24px] leading-8">
+              <div tw="mx-auto" style={{ fontFamily: "Urbanist-Bold" }}>
+                {`${receiverAddress.slice(0, 7)}...${receiverAddress.slice(
+                  -4
+                )}`}
+              </div>
             </div>
           </div>
         ),
