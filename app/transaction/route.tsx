@@ -474,12 +474,20 @@ const handler = frames(async (ctx) => {
       return {
         image: (
           <div tw="relative flex flex-col justify-center">
-            <img src={`${appURL()}/images/frames/send/token.png`} tw="w-full" />
-            <div tw="flex absolute text-white overflow-x-hidden bottom-[118px] left-0 pl-[110px] text-[24px] leading-8">
-              <div tw="mx-auto" style={{ fontFamily: "Urbanist-Bold" }}>
-                {`${receiverAddress.slice(0, 7)}...${receiverAddress.slice(
-                  -4
-                )}`}
+            <img
+              src={`${appURL()}/images/frames/send/send-token.png`}
+              tw="w-full"
+            />
+            <div tw="flex absolute text-white bottom-[105px] left-0 pl-[90px]">
+              <div tw="flex h-[60px] w-[200px] items-center text-center">
+                <p
+                  tw="text-[24px] px-3"
+                  style={{ fontFamily: "Urbanist-Bold" }}
+                >
+                  {`${receiverAddress.slice(0, 7)}...${receiverAddress.slice(
+                    -4
+                  )}`}
+                </p>
               </div>
             </div>
           </div>
@@ -493,13 +501,29 @@ const handler = frames(async (ctx) => {
       if (!userAddress) {
         return {
           image: (
-            <div tw="flex flex-col">
-              <div tw="flex flex-col text-center items-center">
-                <p tw="text-6xl text-balance">Base Frame</p>
-                <p tw="text-3xl text-balance">
-                  Enter the amount of {token} you want to send to{" "}
-                  {receiverAddress}
-                </p>
+            <div tw="relative flex flex-col justify-center">
+              <img
+                src={`${appURL()}/images/frames/send/amount.png`}
+                tw="w-full"
+              />
+              <div tw="w-full flex absolute text-white justify-between bottom-[120px] px-23 text-[24px] font-bold leading-8">
+                <div tw="flex overflow-x-hidden w-[198px]">
+                  <div tw="mx-auto" style={{ fontFamily: "Urbanist-Bold" }}>
+                    {`${receiverAddress.slice(0, 7)}...${receiverAddress.slice(
+                      -4
+                    )}`}
+                  </div>
+                </div>
+                <div tw="flex overflow-x-hidden w-[198px]">
+                  <div tw="mx-auto" style={{ fontFamily: "Urbanist-Bold" }}>
+                    {token}
+                  </div>
+                </div>
+                <div tw="flex overflow-x-hidden w-[198px]">
+                  <div tw="mx-auto" style={{ fontFamily: "Urbanist-Bold" }}>
+                    {" "}
+                  </div>
+                </div>
               </div>
             </div>
           ),
@@ -526,17 +550,39 @@ const handler = frames(async (ctx) => {
         );
         return {
           image: (
-            <div tw="flex flex-col">
-              <div tw="flex flex-col text-center items-center">
-                <p tw="text-6xl text-balance">Base Frame</p>
-                <p tw="text-3xl text-balance">
-                  Enter the amount of {token} you want to send to{" "}
-                  {receiverAddress}
-                </p>
-                <p tw="text-3xl text-balance">You are {userAddress}</p>
-                <p tw="text-3xl text-balance">
-                  You have {formattedBalance} {token}
-                </p>
+            <div tw="relative flex flex-col justify-center">
+              <img
+                src={`${appURL()}/images/frames/send/amount.png`}
+                tw="w-full"
+              />
+              <div tw="w-full flex absolute text-white justify-between bottom-[120px] px-23 text-[24px] font-bold leading-8">
+                <div tw="flex overflow-x-hidden w-[198px]">
+                  <div tw="mx-auto" style={{ fontFamily: "Urbanist-Bold" }}>
+                    {`${receiverAddress.slice(0, 7)}...${receiverAddress.slice(
+                      -4
+                    )}`}
+                  </div>
+                </div>
+                <div tw="flex overflow-x-hidden w-[198px]">
+                  <div tw="mx-auto" style={{ fontFamily: "Urbanist-Bold" }}>
+                    {token}
+                  </div>
+                </div>
+                <div tw="flex overflow-x-hidden w-[198px]">
+                  <div tw="mx-auto" style={{ fontFamily: "Urbanist-Bold" }}>
+                    {" "}
+                  </div>
+                </div>
+              </div>
+              <div tw="w-full flex absolute text-white justify-end bottom-[60px] px-23 text-[24px] font-bold leading-8">
+                <div tw="flex overflow-x-hidden w-[198px]">
+                  <div
+                    tw="flex mx-auto"
+                    style={{ fontFamily: "Urbanist-Bold" }}
+                  >
+                    {formattedBalance.slice(0, 8)} {token}
+                  </div>
+                </div>
               </div>
             </div>
           ),
