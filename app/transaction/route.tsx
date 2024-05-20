@@ -15,7 +15,7 @@ const handler = frames(async (ctx) => {
   const userAddress =
     ctx.message?.requesterVerifiedAddresses &&
     ctx.message?.requesterVerifiedAddresses.length > 0
-      ? ctx.message?.requesterVerifiedAddresses[0]
+      ? ctx.message?.requesterVerifiedAddresses[1]
       : ctx.message?.verifiedWalletAddress;
 
   const transactionType = ctx.url.searchParams
@@ -82,13 +82,11 @@ const handler = frames(async (ctx) => {
 
       return {
         image: (
-          <div tw="flex flex-col">
-            <div tw="flex flex-col text-center items-center">
-              <p tw="text-6xl text-balance">Base Frame</p>
-              <p tw="text-3xl text-balance">
-                Select the token that you want to swap
-              </p>
-            </div>
+          <div tw="relative flex flex-col justify-center">
+            <img
+              src={`${appURL()}/images/frames/swap/token-from.png`}
+              tw="w-full"
+            />
           </div>
         ),
         buttons: buttons,
@@ -96,49 +94,26 @@ const handler = frames(async (ctx) => {
     }
 
     // tokenFrom is valid
-    if (isValidTokenFrom && !isValidTokenTo) {
-      const buttonsFiltered = Object.keys(TOKENS[CHAIN_ID as number])
-        .filter((token) => token !== tokenFrom)
-        .map((token, index) => (
-          <Button
-            action="post"
-            key={`${index + 1}`}
-            target={`/?transaction_type=swap&token_from=${tokenFrom}&token_to=${token}`}
-          >
-            {token}
-          </Button>
-        )) as FrameDefinition<JsonValue>["buttons"];
-
-      return {
-        image: (
-          <div tw="flex flex-col">
-            <div tw="flex flex-col text-center items-center">
-              <p tw="text-6xl text-balance">Base Frame</p>
-              <p tw="text-3xl text-balance">
-                You are swapping {tokenFrom} for ...
-              </p>
-              <p tw="text-3xl text-balance">
-                Select the token that you want to receive from the swap
-              </p>
-            </div>
-          </div>
-        ),
-        buttons: buttonsFiltered,
-      };
-    }
-
-    // tokenFrom and tokenTo are valid
-    if (isValidTokenFrom && isValidTokenTo && !isValidAmount) {
+    if (isValidTokenFrom && !isValidAmount) {
       if (!userAddress) {
         return {
           image: (
-            <div tw="flex flex-col">
-              <div tw="flex flex-col text-center items-center">
-                <p tw="text-6xl text-balance">Base Frame</p>
-                <p tw="text-3xl text-balance">
-                  Select the amount of {tokenFrom} that you want to swap for{" "}
-                  {tokenTo}
-                </p>
+            <div tw="relative flex flex-col justify-center">
+              <img
+                src={`${appURL()}/images/frames/swap/token-from-amount.png`}
+                tw="w-full"
+              />
+              <div tw="flex absolute text-white overflow-x-hidden w-[200px] bottom-[118px] left-0 pl-[160px] text-[24px] leading-8">
+                <div tw="mx-auto" style={{ fontFamily: "Urbanist-Bold" }}>
+                  {tokenFrom}
+                </div>
+              </div>
+              <div tw="flex absolute text-white bottom-[35px] left-0 pl-[380px] text-[24px]">
+                <div tw="flex w-[200px]">
+                  <p tw="mx-auto" style={{ fontFamily: "Urbanist-Bold" }}>
+                    {" "}
+                  </p>
+                </div>
               </div>
             </div>
           ),
@@ -147,7 +122,7 @@ const handler = frames(async (ctx) => {
             <Button
               action="post"
               key="1"
-              target={`/?transaction_type=swap&token_from=${tokenFrom}&token_to=${tokenTo}&amount=${amount}`}
+              target={`/?transaction_type=swap&token_from=${tokenFrom}&amount=${amount}&token_to=${tokenTo}`}
             >
               Next
             </Button>,
@@ -166,17 +141,22 @@ const handler = frames(async (ctx) => {
 
         return {
           image: (
-            <div tw="flex flex-col">
-              <div tw="flex flex-col text-center items-center">
-                <p tw="text-6xl text-balance">Base Frame</p>
-                <p tw="text-3xl text-balance">
-                  Select the amount of {tokenFrom} that you want to swap for{" "}
-                  {tokenTo}
-                </p>
-                <p tw="text-3xl text-balance">
-                  You have {formattedBalance} {tokenFrom}
-                </p>
-                <p tw="text-3xl text-balance">You are {userAddress}</p>
+            <div tw="relative flex flex-col justify-center">
+              <img
+                src={`${appURL()}/images/frames/swap/token-from-amount-balance.png`}
+                tw="w-full"
+              />
+              <div tw="flex absolute text-white overflow-x-hidden w-[200px] bottom-[118px] left-0 pl-[160px] text-[24px] leading-8">
+                <div tw="mx-auto" style={{ fontFamily: "Urbanist-Bold" }}>
+                  {tokenFrom}
+                </div>
+              </div>
+              <div tw="flex absolute text-white bottom-[35px] left-0 pl-[380px] text-[24px]">
+                <div tw="flex w-[200px]">
+                  <p tw="mx-auto" style={{ fontFamily: "Urbanist-Bold" }}>
+                    {`${formattedBalance} ${tokenFrom}`.slice(0, 15)}
+                  </p>
+                </div>
               </div>
             </div>
           ),
@@ -194,6 +174,49 @@ const handler = frames(async (ctx) => {
       }
     }
 
+    // tokenFrom and tokenTo are valid
+    if (isValidTokenFrom && isValidAmount && !isValidTokenTo) {
+      const buttonsFiltered = Object.keys(TOKENS[CHAIN_ID as number])
+        .filter((token) => token !== tokenFrom)
+        .map((token, index) => (
+          <Button
+            action="post"
+            key={`${index + 1}`}
+            target={`/?transaction_type=swap&token_from=${tokenFrom}&amount=${amount}&token_to=${token}`}
+          >
+            {token}
+          </Button>
+        )) as FrameDefinition<JsonValue>["buttons"];
+      return {
+        image: (
+          <div tw="relative flex flex-col justify-center">
+            <img
+              src={`${appURL()}/images/frames/swap/token-to.png`}
+              tw="w-full"
+            />
+            <div tw="w-full flex absolute text-white justify-between bottom-[120px] px-23 text-[24px] font-bold leading-8">
+              <div tw="flex overflow-x-hidden w-[198px]">
+                <div tw="mx-auto" style={{ fontFamily: "Urbanist-Bold" }}>
+                  {tokenFrom}
+                </div>
+              </div>
+              <div tw="flex overflow-x-hidden w-[198px]">
+                <div tw="mx-auto" style={{ fontFamily: "Urbanist-Bold" }}>
+                  {amount}
+                </div>
+              </div>
+              <div tw="flex overflow-x-hidden w-[198px]">
+                <div tw="mx-auto" style={{ fontFamily: "Urbanist-Bold" }}>
+                  {" "}
+                </div>
+              </div>
+            </div>
+          </div>
+        ),
+        buttons: buttonsFiltered,
+      };
+    }
+
     // tokenFrom and tokenTo and amount are all valid
     if (isValidTokenFrom && isValidTokenTo && isValidAmount && userAddress) {
       const userBalance = await getTokenBalance(userAddress, tokenFrom);
@@ -209,16 +232,25 @@ const handler = frames(async (ctx) => {
       if (userBalance < bigIntAmount) {
         return {
           image: (
-            <div tw="flex flex-col text-center items-center">
-              <p tw="text-6xl text-balance">Swap</p>
-              <p tw="text-3xl text-balance">You are {userAddress}</p>
-              <p tw="text-3xl text-balance">
-                You have {formattedBalance} {tokenFrom} but you need at least{" "}
-                {amount} {tokenFrom}
-              </p>
-              <p tw="text-3xl text-balance">
-                Replenish your Base account and refresh
-              </p>
+            <div tw="relative flex flex-col text-center items-center justify-center">
+              <img
+                src={`${appURL()}/images/frames/swap/failed.png`}
+                tw="w-full"
+              />
+              <div tw="w-full flex absolute text-white top-[140px] pl-16 text-[32px] font-light leading-8">
+                <div tw="flex">
+                  <p>
+                    You are swapping
+                    <b tw="mx-2" style={{ fontFamily: "Urbanist-Bold" }}>
+                      {amount} {tokenFrom}
+                    </b>
+                    but you only have
+                    <b tw="mx-2" style={{ fontFamily: "Urbanist-Bold" }}>
+                      {formattedBalance.slice(0, 8)} {tokenFrom}
+                    </b>
+                  </p>
+                </div>
+              </div>
             </div>
           ),
           buttons: [
@@ -249,11 +281,42 @@ const handler = frames(async (ctx) => {
       if (!allowance) {
         return {
           image: (
-            <div tw="flex flex-col text-center items-center">
-              <p tw="text-6xl text-balance">Approve Swap</p>
-              <p tw="text-3xl text-balance">
-                You are swapping {amount} {tokenFrom} for {tokenTo}
-              </p>
+            <div tw="relative flex flex-col text-center items-center justify-center">
+              <img
+                src={`${appURL()}/images/frames/swap/approve.png`}
+                tw="w-full"
+              />
+              <div tw="w-full flex absolute text-white top-[140px] pl-16 text-[32px] font-light leading-8">
+                <div tw="flex">
+                  <p>
+                    Approve the swap of
+                    <b tw="mx-2" style={{ fontFamily: "Urbanist-Bold" }}>
+                      {amount} {tokenFrom}
+                    </b>
+                    for
+                    <b tw="mx-2" style={{ fontFamily: "Urbanist-Bold" }}>
+                      {tokenTo}
+                    </b>
+                  </p>
+                </div>
+              </div>
+              <div tw="w-full flex absolute text-white justify-between bottom-[140px] px-23 text-[24px] font-bold leading-8">
+                <div tw="flex overflow-x-hidden w-[198px]">
+                  <div tw="mx-auto" style={{ fontFamily: "Urbanist-Bold" }}>
+                    {tokenFrom}
+                  </div>
+                </div>
+                <div tw="flex overflow-x-hidden w-[198px]">
+                  <div tw="mx-auto" style={{ fontFamily: "Urbanist-Bold" }}>
+                    {amount}
+                  </div>
+                </div>
+                <div tw="flex overflow-x-hidden w-[198px]">
+                  <div tw="mx-auto" style={{ fontFamily: "Urbanist-Bold" }}>
+                    {tokenTo}
+                  </div>
+                </div>
+              </div>
             </div>
           ),
           buttons: [
@@ -277,11 +340,42 @@ const handler = frames(async (ctx) => {
       } else {
         return {
           image: (
-            <div tw="flex flex-col text-center items-center">
-              <p tw="text-6xl text-balance">Confirm Swap</p>
-              <p tw="text-3xl text-balance">
-                You are swapping {amount} {tokenFrom} for {tokenTo}
-              </p>
+            <div tw="relative flex flex-col text-center items-center justify-center">
+              <img
+                src={`${appURL()}/images/frames/swap/confirm.png`}
+                tw="w-full"
+              />
+              <div tw="w-full flex absolute text-white top-[140px] pl-16 text-[32px] font-light leading-8">
+                <div tw="flex">
+                  <p>
+                    Confirm the swap of
+                    <b tw="mx-2" style={{ fontFamily: "Urbanist-Bold" }}>
+                      {amount} {tokenFrom}
+                    </b>
+                    for
+                    <b tw="mx-2" style={{ fontFamily: "Urbanist-Bold" }}>
+                      {tokenTo}
+                    </b>
+                  </p>
+                </div>
+              </div>
+              <div tw="w-full flex absolute text-white justify-between bottom-[117px] px-23 text-[24px] font-bold leading-8">
+                <div tw="flex overflow-x-hidden w-[198px]">
+                  <div tw="mx-auto" style={{ fontFamily: "Urbanist-Bold" }}>
+                    {tokenFrom}
+                  </div>
+                </div>
+                <div tw="flex overflow-x-hidden w-[198px]">
+                  <div tw="mx-auto" style={{ fontFamily: "Urbanist-Bold" }}>
+                    {amount}
+                  </div>
+                </div>
+                <div tw="flex overflow-x-hidden w-[198px]">
+                  <div tw="mx-auto" style={{ fontFamily: "Urbanist-Bold" }}>
+                    {tokenTo}
+                  </div>
+                </div>
+              </div>
             </div>
           ),
           buttons: [
@@ -301,16 +395,22 @@ const handler = frames(async (ctx) => {
     return {
       image: (
         <div tw="relative flex flex-col text-center items-center justify-center">
-          <img src={`${appURL()}/confirm-swap.png`} tw="w-full" />
+          <img src={`${appURL()}/images/frames/swap/confirm.png`} tw="w-full" />
           <div tw="w-full flex absolute text-white justify-between bottom-[117px] px-23 text-[24px] font-bold leading-8">
             <div tw="flex overflow-x-hidden w-[198px]">
-              <div tw="mx-auto">{tokenFrom}</div>
+              <div tw="mx-auto" style={{ fontFamily: "Urbanist-Bold" }}>
+                {tokenFrom}
+              </div>
             </div>
             <div tw="flex overflow-x-hidden w-[198px]">
-              <div tw="mx-auto">{amount}</div>
+              <div tw="mx-auto" style={{ fontFamily: "Urbanist-Bold" }}>
+                {amount}
+              </div>
             </div>
             <div tw="flex overflow-x-hidden w-[198px]">
-              <div tw="mx-auto">{tokenTo}</div>
+              <div tw="mx-auto" style={{ fontFamily: "Urbanist-Bold" }}>
+                {tokenTo}
+              </div>
             </div>
           </div>
         </div>

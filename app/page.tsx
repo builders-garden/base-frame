@@ -55,7 +55,7 @@ export default async function Home() {
           </div>
         </div>
         <div className="flex flex-row justify-center items-center">
-          <Image src={"/code.png"} alt="code" className="w-96" />
+          <Image src={"/images/code.png"} alt="code" className="w-96" />
         </div>
       </div>
     </div>
