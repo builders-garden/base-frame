@@ -306,15 +306,15 @@ const handler = frames(async (ctx) => {
             alt="Background"
             tw="w-full"
           />
-          <div tw="w-full flex flex-row text-white items-center text-center absolute justify-between bottom-[165px] px-36">
-            <div tw="flex flex-row justify-center items-center">
-              <div tw=" w-[176px]">{tokenFrom}</div>
+          <div tw="w-full flex absolute text-white justify-between bottom-[117px] px-23 text-[24px] font-bold leading-8">
+            <div tw="flex overflow-x-hidden w-[198px]">
+              <div tw="mx-auto">{tokenFrom}</div>
             </div>
-            <div tw="flex flex-row justify-center items-center">
-              <div tw=" w-[176px]">{amount}</div>
+            <div tw="flex overflow-x-hidden w-[198px]">
+              <div tw="mx-auto">{amount}</div>
             </div>
-            <div tw="flex flex-row justify-center items-center">
-              <div tw=" w-[176px]">{tokenTo}</div>
+            <div tw="flex overflow-x-hidden w-[198px]">
+              <div tw="mx-auto">{tokenTo}</div>
             </div>
           </div>
         </div>

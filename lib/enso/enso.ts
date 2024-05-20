@@ -58,7 +58,6 @@ export async function swap(
       },
     });
     const data = (await response.json()) as ApiResponse;
-    console.log("enso data", data);
 
     return {
       chainId: "eip155:".concat(CHAIN_ID.toString()),
