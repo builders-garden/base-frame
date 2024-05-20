@@ -552,7 +552,7 @@ const handler = frames(async (ctx) => {
           image: (
             <div tw="relative flex flex-col justify-center">
               <img
-                src={`${appURL()}/images/frames/send/amount.png`}
+                src={`${appURL()}/images/frames/send/amount-balance.png`}
                 tw="w-full"
               />
               <div tw="w-full flex absolute text-white justify-between bottom-[120px] px-23 text-[24px] font-bold leading-8">
