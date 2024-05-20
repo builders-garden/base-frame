@@ -15,7 +15,7 @@ const handler = frames(async (ctx) => {
   const userAddress =
     ctx.message?.requesterVerifiedAddresses &&
     ctx.message?.requesterVerifiedAddresses.length > 0
-      ? ctx.message?.requesterVerifiedAddresses[1]
+      ? ctx.message?.requesterVerifiedAddresses[0]
       : ctx.message?.verifiedWalletAddress;
 
   const transactionType = ctx.url.searchParams
@@ -301,11 +301,7 @@ const handler = frames(async (ctx) => {
     return {
       image: (
         <div tw="relative flex flex-col text-center items-center justify-center">
-          <img
-            src={`${appURL()}/confirm-swap.png`}
-            alt="Background"
-            tw="w-full"
-          />
+          <img src={`${appURL()}/confirm-swap.png`} tw="w-full" />
           <div tw="w-full flex absolute text-white justify-between bottom-[117px] px-23 text-[24px] font-bold leading-8">
             <div tw="flex overflow-x-hidden w-[198px]">
               <div tw="mx-auto">{tokenFrom}</div>
