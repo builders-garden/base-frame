@@ -15,7 +15,7 @@ const handler = frames(async (ctx) => {
   const userAddress =
     ctx.message?.requesterVerifiedAddresses &&
     ctx.message?.requesterVerifiedAddresses.length > 0
-      ? ctx.message?.requesterVerifiedAddresses[1]
+      ? ctx.message?.requesterVerifiedAddresses[0]
       : ctx.message?.verifiedWalletAddress;
 
   const transactionType = ctx.url.searchParams

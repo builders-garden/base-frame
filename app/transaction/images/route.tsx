@@ -14,7 +14,7 @@ const boldFontData = fs.readFileSync(
 
 const imagesWorker = createImagesWorker({
   imageOptions: {
-    debug: true,
+    debug: false,
     sizes: {
       "1.91:1": {
         width: 955,
