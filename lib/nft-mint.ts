@@ -30,7 +30,7 @@ export const getNftData = async (
   let imgUrl = response.token?.token.image?.url;
   if (imgUrl?.includes("ipfs://")) {
     const hash = imgUrl.split("ipfs://").pop();
-    imgUrl = `https://${hash}.ipfs.dweb.link`;
+    imgUrl = `https://${hash}.ipfs.cf-ipfs.com`;
   }
 
   return {

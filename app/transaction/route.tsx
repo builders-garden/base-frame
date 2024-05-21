@@ -227,10 +227,10 @@ const handler = frames(async (ctx) => {
                 src={`${appURL()}/images/frames/swap/failed.png`}
                 tw="w-full"
               />
-              <div tw="w-full flex absolute text-white top-[140px] pl-16 text-[32px] font-light leading-8">
+              <div tw="w-full flex absolute text-white top-[140px] pl-16 text-[24px] font-light leading-8">
                 <div tw="flex">
                   <p>
-                    You are swapping
+                    You are trying to swap
                     <b tw="mx-2" style={{ fontFamily: "Urbanist-Bold" }}>
                       {amount} {tokenFrom}
                     </b>
@@ -618,16 +618,25 @@ const handler = frames(async (ctx) => {
       if (userBalance < bigIntAmount) {
         return {
           image: (
-            <div tw="flex flex-col text-center items-center justify-around">
-              <p tw="text-6xl text-balance">Transfer Token</p>
-              <p tw="text-3xl mx-auto text-balance">You are {userAddress}</p>
-              <p tw="text-3xl text-balance">
-                You have {formattedBalance} {token} but you need at least{" "}
-                {amount} {token}
-              </p>
-              <p tw="text-3xl mx-auto text-balance">
-                Replenish your Base account and refresh
-              </p>
+            <div tw="relative flex flex-col justify-center">
+              <img
+                src={`${appURL()}/images/frames/send/send-failed.png`}
+                tw="w-full"
+              />
+              <div tw="w-full flex absolute text-white top-[140px] pl-16 text-[24px] font-light leading-8">
+                <div tw="flex">
+                  <p>
+                    You are trying to send
+                    <b tw="mx-2" style={{ fontFamily: "Urbanist-Bold" }}>
+                      {amount} {token}
+                    </b>
+                    but you only have
+                    <b tw="mx-2" style={{ fontFamily: "Urbanist-Bold" }}>
+                      {formattedBalance.slice(0, 8)} {token}
+                    </b>
+                  </p>
+                </div>
+              </div>
             </div>
           ),
           buttons: [
@@ -651,11 +660,27 @@ const handler = frames(async (ctx) => {
     }
     return {
       image: (
-        <div tw="flex flex-col gap-1 justify-around text-center items-center">
-          <p tw="text-6xl text-balance">Confirm Send</p>
-          <p tw="text-3xl w-[70vw] mx-auto text-balance">
-            You are sending {amount} {token} to {receiverAddress}
-          </p>
+        <div tw="relative flex flex-col justify-center">
+          <img src={`${appURL()}/images/frames/send/confirm.png`} tw="w-full" />
+          <div tw="w-full flex absolute text-white justify-between bottom-[120px] px-23 text-[24px] font-bold leading-8">
+            <div tw="flex overflow-x-hidden w-[198px]">
+              <div tw="mx-auto" style={{ fontFamily: "Urbanist-Bold" }}>
+                {`${receiverAddress.slice(0, 7)}...${receiverAddress.slice(
+                  -4
+                )}`}
+              </div>
+            </div>
+            <div tw="flex overflow-x-hidden w-[198px]">
+              <div tw="mx-auto" style={{ fontFamily: "Urbanist-Bold" }}>
+                {token}
+              </div>
+            </div>
+            <div tw="flex overflow-x-hidden w-[198px]">
+              <div tw="mx-auto" style={{ fontFamily: "Urbanist-Bold" }}>
+                {amount.slice(0, 8)}
+              </div>
+            </div>
+          </div>
         </div>
       ),
       buttons: [
@@ -686,11 +711,11 @@ const handler = frames(async (ctx) => {
     if (!isValidCollectionAddress) {
       return {
         image: (
-          <div tw="flex flex-col">
-            <div tw="flex flex-col text-center items-center">
-              <p tw="text-6xl text-balance">Base Frame</p>
-              <p tw="text-3xl text-balance">Enter the collection address</p>
-            </div>
+          <div tw="relative flex flex-col text-center items-center justify-center">
+            <img
+              src={`${appURL()}/images/frames/mint/collection.png`}
+              tw="w-full"
+            />
           </div>
         ),
         textInput: "collection address 0x...",
@@ -709,10 +734,20 @@ const handler = frames(async (ctx) => {
     if (isValidCollectionAddress && !isValidTokenId) {
       return {
         image: (
-          <div tw="flex flex-col">
-            <div tw="flex flex-col text-center items-center">
-              <p tw="text-6xl text-balance">Base Frame</p>
-              <p tw="text-3xl text-balance">Enter the token id</p>
+          <div tw="relative flex flex-col text-center items-center justify-center">
+            <img
+              src={`${appURL()}/images/frames/mint/token-id.png`}
+              tw="w-full"
+            />
+            <div tw="w-full flex absolute text-white justify-start bottom-[117px] px-23 text-[24px] font-bold leading-8">
+              <div tw="flex overflow-x-hidden w-[340px]">
+                <div tw="mx-auto" style={{ fontFamily: "Urbanist-Bold" }}>
+                  {`${collectionAddress.slice(
+                    0,
+                    12
+                  )}...${collectionAddress.slice(-6)}`}
+                </div>
+              </div>
             </div>
           </div>
         ),
@@ -747,11 +782,24 @@ const handler = frames(async (ctx) => {
       if (!isFixedPriceNftStrategy) {
         return {
           image: (
-            <div tw="flex flex-col text-center items-center">
-              <p tw="text-6xl text-balance">Mint</p>
-              <p tw="text-3xl text-balance">
-                This Zora collection has a not supported minting strategy.
-              </p>
+            <div tw="relative flex flex-col text-center items-center justify-center">
+              <img
+                src={`${appURL()}/images/frames/mint/failed-strategy.png`}
+                tw="w-full"
+              />
+              <div tw="w-full flex absolute text-white top-[140px] pl-16 text-[24px] font-light leading-8">
+                <div tw="flex">
+                  <p>
+                    You are trying to mint NFT #{tokenId}
+                    <b tw="mx-2" style={{ fontFamily: "Urbanist-Bold" }}>
+                      {`${collectionAddress.slice(
+                        0,
+                        12
+                      )}...${collectionAddress.slice(-6)}`}
+                    </b>
+                  </p>
+                </div>
+              </div>
             </div>
           ),
           buttons: [
@@ -765,23 +813,30 @@ const handler = frames(async (ctx) => {
           const formattedNftPrice: string = formatUnits(nftType.nftPrice, 18);
           return {
             image: (
-              <div tw="flex flex-col text-center items-center">
-                <p tw="text-6xl text-balance">Mint</p>
-                <p tw="text-3xl text-balance">You are {userAddress}</p>
-                <p tw="text-3xl text-balance">
-                  You have {formattedBalance} ETH but you need at least{" "}
-                  {formattedNftPrice} ETH
-                </p>
-                <p tw="text-3xl text-balance">
-                  Replenish your Base account and refresh
-                </p>
-                {/* {nftMetadata.image ? (
+              <div tw="relative flex flex-col text-center items-center justify-center">
                 <img
-                  src={nftMetadata.image}
-                  alt={nftMetadata.description}
-                  width={"250px"}
+                  src={`${appURL()}/images/frames/mint/failed-balance.png`}
+                  tw="w-full"
                 />
-              ) : null} */}
+                <div tw="w-full flex absolute text-white top-[140px] pl-16 text-[24px] font-light leading-8">
+                  <div tw="flex">
+                    <p>
+                      You are trying to mint NFT #{tokenId}
+                      <b tw="mx-2" style={{ fontFamily: "Urbanist-Bold" }}>
+                        {`${collectionAddress.slice(
+                          0,
+                          12
+                        )}...${collectionAddress.slice(-6)}`}
+                      </b>
+                    </p>
+                  </div>
+                  <div tw="flex">
+                    <p tw="text-3xl text-balance">
+                      You have {formattedBalance} ETH but you need at least{" "}
+                      {formattedNftPrice} ETH
+                    </p>
+                  </div>
+                </div>
               </div>
             ),
             buttons: [
@@ -802,22 +857,28 @@ const handler = frames(async (ctx) => {
             ],
           };
         }
-
         return {
           image: (
-            <div tw="flex flex-col text-center items-center">
-              <p tw="text-6xl text-balance">Mint</p>
-              <p tw="text-3xl text-balance">
-                You are minting {nftMetadata.name ? nftMetadata.name : null}{" "}
-                token {tokenId} from collection {collectionAddress}
-              </p>
-              {/* {nftMetadata.image ? (
-                <img
-                  src={nftMetadata.image}
-                  alt={nftMetadata.description}
-                  width={"250px"}
-                />
-              ) : null} */}
+            <div tw="relative flex flex-col text-center items-center justify-center">
+              <img
+                src={`${appURL()}/images/frames/mint/confirm.png`}
+                tw="w-full"
+              />
+              <div tw="w-full flex absolute text-white justify-between bottom-[117px] px-23 text-[24px] font-bold leading-8">
+                <div tw="flex overflow-x-hidden w-[340px]">
+                  <div tw="mx-auto" style={{ fontFamily: "Urbanist-Bold" }}>
+                    {`${collectionAddress.slice(
+                      0,
+                      12
+                    )}...${collectionAddress.slice(-6)}`}
+                  </div>
+                </div>
+                <div tw="flex overflow-x-hidden w-[340px]">
+                  <div tw="mx-auto" style={{ fontFamily: "Urbanist-Bold" }}>
+                    {tokenId}
+                  </div>
+                </div>
+              </div>
             </div>
           ),
           buttons: [
@@ -835,18 +896,17 @@ const handler = frames(async (ctx) => {
     }
     return {
       image: (
-        <div tw="flex flex-col text-center items-center">
-          <p tw="text-6xl text-balance">Mint</p>
-          <p tw="text-3xl text-balance">
-            You are minting token {tokenId} from collection {collectionAddress}
-          </p>
-          {/* {nftMetadata.image ? (
-            <img
-              src={nftMetadata.image}
-              alt={nftMetadata.description}
-              width={"250px"}
-            />
-          ) : null} */}
+        <div tw="relative flex flex-col text-center items-center justify-center">
+          <img src={`${appURL()}/images/frames/mint/confirm.png`} tw="w-full" />
+          <div tw="w-full flex absolute text-white justify-start bottom-[117px] px-23 text-[24px] font-bold leading-8">
+            <div tw="flex overflow-x-hidden w-[340px]">
+              <div tw="mx-auto" style={{ fontFamily: "Urbanist-Bold" }}>
+                {`${collectionAddress.slice(0, 12)}...${collectionAddress.slice(
+                  -6
+                )}`}
+              </div>
+            </div>
+          </div>
         </div>
       ),
       buttons: [
@@ -863,11 +923,8 @@ const handler = frames(async (ctx) => {
 
   return {
     image: (
-      <div tw="flex flex-col">
-        <div tw="flex flex-col text-center items-center">
-          <p tw="text-6xl text-balance">Base Frame</p>
-          <p tw="text-3xl text-balance">What can you do with this frame?</p>
-        </div>
+      <div tw="relative flex flex-col text-center items-center justify-center">
+        <img src={`${appURL()}/images/frames/landing.png`} tw="w-full" />
       </div>
     ),
     buttons: [

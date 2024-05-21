@@ -1,5 +1,6 @@
 import { Button } from "frames.js/next";
 import { frames } from "@/app/transaction/frames";
+import { appURL } from "@/lib/utils";
 
 const handler = frames(async (ctx) => {
   if (!ctx?.message?.isValid) {
@@ -8,10 +9,8 @@ const handler = frames(async (ctx) => {
 
   return {
     image: (
-      <div tw="flex flex-col w-full text-center items-center align-middle">
-        <p tw="flex flex-col text-4xl text-center items-center align-middle">
-          In this frame you can swap, send or mint
-        </p>
+      <div tw="relative flex flex-col text-center items-center justify-center">
+        <img src={`${appURL()}/images/frames/landing.png`} tw="w-full" />
       </div>
     ),
     buttons: [
