@@ -335,7 +335,7 @@ const handler = frames(async (ctx) => {
                 src={`${appURL()}/images/frames/swap/confirm.png`}
                 tw="w-full"
               />
-              <div tw="w-full flex absolute text-white top-[140px] pl-16 text-[32px] font-light leading-8">
+              <div tw="w-full flex absolute text-white top-[140px] pl-16 text-[24px] font-light leading-8">
                 <div tw="flex">
                   <p>
                     Confirm the swap of
@@ -386,7 +386,7 @@ const handler = frames(async (ctx) => {
       image: (
         <div tw="relative flex flex-col text-center items-center justify-center">
           <img src={`${appURL()}/images/frames/swap/confirm.png`} tw="w-full" />
-          <div tw="w-full flex absolute text-white top-[140px] pl-16 text-[32px] font-light leading-8">
+          <div tw="w-full flex absolute text-white top-[140px] pl-16 text-[24px] font-light leading-8">
             <div tw="flex">
               <p>
                 Confirm the swap of
@@ -676,6 +676,22 @@ const handler = frames(async (ctx) => {
       image: (
         <div tw="relative flex flex-col justify-center">
           <img src={`${appURL()}/images/frames/send/confirm.png`} tw="w-full" />
+          <div tw="w-full flex absolute text-white top-[140px] pl-16 text-[24px] font-light leading-8">
+            <div tw="flex">
+              <p>
+                Confirm sending of
+                <b tw="mx-2" style={{ fontFamily: "Urbanist-Bold" }}>
+                  {amount} {token}
+                </b>
+                to
+                <b tw="mx-2" style={{ fontFamily: "Urbanist-Bold" }}>
+                  {`${receiverAddress.slice(0, 7)}...${receiverAddress.slice(
+                    -4
+                  )}`}
+                </b>
+              </p>
+            </div>
+          </div>
           <div tw="w-full flex absolute text-white justify-between bottom-[120px] px-23 text-[24px] font-bold leading-8">
             <div tw="flex overflow-x-hidden w-[198px]">
               <div tw="mx-auto" style={{ fontFamily: "Urbanist-Bold" }}>
@@ -878,6 +894,22 @@ const handler = frames(async (ctx) => {
                 src={`${appURL()}/images/frames/mint/confirm.png`}
                 tw="w-full"
               />
+              <div tw="w-full flex absolute text-white top-[140px] pl-16 text-[24px] font-light leading-8">
+                <div tw="flex">
+                  <p>
+                    Confirm minting of NFT
+                    <b tw="mx-2" style={{ fontFamily: "Urbanist-Bold" }}>
+                      #{tokenId}
+                    </b>
+                    <b tw="mx-2" style={{ fontFamily: "Urbanist-Bold" }}>
+                      {`${collectionAddress.slice(
+                        0,
+                        12
+                      )}...${collectionAddress.slice(-6)}`}
+                    </b>
+                  </p>
+                </div>
+              </div>
               <div tw="w-full flex absolute text-white justify-between bottom-[117px] px-23 text-[24px] font-bold leading-8">
                 <div tw="flex overflow-x-hidden w-[340px]">
                   <div tw="mx-auto" style={{ fontFamily: "Urbanist-Bold" }}>
@@ -912,12 +944,33 @@ const handler = frames(async (ctx) => {
       image: (
         <div tw="relative flex flex-col text-center items-center justify-center">
           <img src={`${appURL()}/images/frames/mint/confirm.png`} tw="w-full" />
-          <div tw="w-full flex absolute text-white justify-start bottom-[117px] px-23 text-[24px] font-bold leading-8">
+          <div tw="w-full flex absolute text-white top-[140px] pl-16 text-[24px] font-light leading-8">
+            <div tw="flex">
+              <p>
+                Confirm minting of NFT
+                <b tw="mx-2" style={{ fontFamily: "Urbanist-Bold" }}>
+                  #{tokenId}
+                </b>
+                <b tw="mx-2" style={{ fontFamily: "Urbanist-Bold" }}>
+                  {`${collectionAddress.slice(
+                    0,
+                    12
+                  )}...${collectionAddress.slice(-6)}`}
+                </b>
+              </p>
+            </div>
+          </div>
+          <div tw="w-full flex absolute text-white justify-between bottom-[117px] px-23 text-[24px] font-bold leading-8">
             <div tw="flex overflow-x-hidden w-[340px]">
               <div tw="mx-auto" style={{ fontFamily: "Urbanist-Bold" }}>
                 {`${collectionAddress.slice(0, 12)}...${collectionAddress.slice(
                   -6
                 )}`}
+              </div>
+            </div>
+            <div tw="flex w-[340px]">
+              <div tw="mx-auto" style={{ fontFamily: "Urbanist-Bold" }}>
+                {tokenId}
               </div>
             </div>
           </div>
